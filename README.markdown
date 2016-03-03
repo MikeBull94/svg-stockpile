@@ -61,7 +61,7 @@ X)
 * [JUnit][junit] (for unit tests)
 * [APIviz][apiviz] (for UML-like class diagrams in the generated Javadoc)
 * [FindBugs™][findbugs] (for Java code linting)
-* [PMD][pmd] (for Java codde linting)
+* [PMD][pmd] (for Java code linting)
 
 ## License
 
