@@ -134,23 +134,6 @@ public final class Svg4j {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		Svg4j svg4j = (Svg4j) o;
-		return Objects.equals(factory, svg4j.factory);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(factory);
-	}
-
-	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 			.add("factory", factory)
