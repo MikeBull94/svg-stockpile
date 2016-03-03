@@ -12,11 +12,13 @@ most modern browsers.
 
 ## Usage
 
-An example of the tool's usage is provided in the `Svg4j` class. The example
-searches in `core/src/main/resources` for files with the `.svg` extension,
-stacking and optimizing them into `core/build/resources/main`. This directory
-also contains an `example.html` file that shows how to refer to the embedded SVG
-elements by their fragment identifier.
+An example of the tool's usage is provided in the
+[`Svg4j`](core/src/main/java/com/mikebull94/svg4j/Svg4j.java) class. The example
+searches in [`core/src/main/resources`](core/src/main/resources) for files with
+the `.svg` extension, stacking and optimizing them into
+`core/build/resources/main`. This directory also contains an
+[`example.html`](core/src/main/resources/example.html) file that shows how to
+refer to the embedded SVG elements by their fragment identifier.
 
 The example SVGs included in the distribution are variations of the [Wikimedia
 Community Logo][wikimedia-community-logo], licensed for any purpose within the
@@ -38,7 +40,7 @@ install Gradle on your system.
 To build the program and generate aggregated Javadoc, run:
 
 * `./gradlew` (on Unix-like platforms such as Linux and Mac OS X)
-* `gradlew` (on Windows using the gradlew.bat batch file)
+* `gradlew` (on Windows using the [gradlew.bat](gradlew.bat) batch file)
 
 [FindBugs™][findbugs] and [PMD][pmd] are used to [lint][lint] the Java code and
 will fail the build on rule violations.
@@ -51,7 +53,8 @@ To generate the latest Javadoc (stored at `build/docs/javadoc`), run:
 
 * `./gradlew aggregateJavadoc` (on Unix-like platforms such as Linux and Mac OS
 X)
-* `gradlew aggregateJavadoc` (on Windows using the gradlew.bat batch file)
+* `gradlew aggregateJavadoc` (on Windows using the [gradlew.bat](gradlew.bat)
+batch file)
 
 ## Dependencies
 
@@ -65,8 +68,8 @@ X)
 
 ## License
 
-This project is available under the terms of the ISC license. See the `LICENSE`
-file for the copyright information and licensing terms.
+This project is available under the terms of the ISC license. See the
+[`LICENSE`](LICENSE) file for the copyright information and licensing terms.
 
 [svg]: https://www.w3.org/Graphics/SVG/
 [caniuse-svg]: http://caniuse.com/#feat=svg
