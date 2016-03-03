@@ -2,6 +2,7 @@ package com.mikebull94.svg4j;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.Files;
 import com.mikebull94.svg4j.util.PathUtils;
 import com.mikebull94.svg4j.xml.XmlDocument;
 import com.mikebull94.svg4j.xml.XmlDocumentFactory;
@@ -45,7 +46,7 @@ public final class Svg4j {
 			logger.info("Starting svg4j...");
 			Svg4j svg4j = new Svg4j();
 
-			XmlDocument stacked = svg4j.stack(VIEW_BOX, PathUtils.listRecursive(DIRECTORY, HAS_SVG_EXTENSION));
+			XmlDocument stacked = svg4j.stack(VIEW_BOX, PathUtils.filterPathsIn(DIRECTORY, HAS_SVG_EXTENSION));
 			Path output = stacked.write(OUTPUT);
 			logger.info("svg4j complete. Output: {}", output);
 		} catch (Throwable t) {
@@ -111,15 +112,10 @@ public final class Svg4j {
 		Path filename = path.getFileName();
 
 		if (filename == null) {
-			throw new IOException("Path filename has zero elements " + path);
+			throw new IOException("Path " + path + " has zero elements.");
 		}
 
-		String id = filename.toString();
-		int lastPeriod = id.lastIndexOf('.');
-
-		if (lastPeriod != -1) {
-			id = id.substring(0, lastPeriod);
-		}
+		String id = Files.getNameWithoutExtension(filename.toString());
 
 		try (InputStream inputStream = new FileInputStream(path.toFile())) {
 			return stack(id, inputStream);

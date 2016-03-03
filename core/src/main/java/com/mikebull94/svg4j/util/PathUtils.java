@@ -3,9 +3,11 @@ package com.mikebull94.svg4j.util;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.function.Predicate;
 
 /**
@@ -14,36 +16,41 @@ import java.util.function.Predicate;
 public final class PathUtils {
 
 	/**
-	 * Recursively lists all {@link Path}s in a directory.
-	 * @param path The {@link Path} of the directory to scan.
+	 * An empty {@link Predicate} that will always return {@code true}.
+	 */
+	private static final Predicate<Path> UNFILTERED = path -> true;
+
+	/**
+	 * Recursively lists all {@link Path}s.
+	 * @param start The {@link Path} to start at.
 	 * @return An {@link ImmutableList} of {@link Path}s in the directory and all sub-directories.
 	 * @throws IOException If an I/O error occurs.
 	 */
-	public static ImmutableList<Path> listRecursive(Path path) throws IOException {
-		return listRecursive(path, p -> true);
+	public static ImmutableList<Path> findPathsIn(Path start) throws IOException {
+		return filterPathsIn(start, UNFILTERED);
 	}
 
 	/**
-	 * Recursively lists all {@link Path}s in a directory.
-	 * @param path The {@link Path} of the directory to scan.
-	 * @param filter The {@link Predicate} to apply to each {@link Path}.
+	 * Recursively lists all {@link Path}s that satisfy a {@link Predicate}.
+	 * @param start The {@link Path} to start at.
+	 * @param filter The {@link Predicate} to filter {@link Path}s with.
 	 * @return An {@link ImmutableList} of filtered {@link Path}s in the directory and all sub-directories.
 	 * @throws IOException If an I/O error occurs.
 	 */
-	public static ImmutableList<Path> listRecursive(Path path, Predicate<Path> filter) throws IOException {
-		ImmutableList.Builder<Path> builder = ImmutableList.builder();
+	public static ImmutableList<Path> filterPathsIn(Path start, Predicate<Path> filter) throws IOException {
+		ImmutableList.Builder<Path> filtered = ImmutableList.builder();
 
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
-			for (Path entry : stream) {
-				if (Files.isDirectory(entry)) {
-					builder.addAll(listRecursive(path, filter));
-				} else if (filter.test(entry)) {
-					builder.add(entry);
+		Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+				if (filter.test(file)) {
+					filtered.add(file);
 				}
+				return FileVisitResult.CONTINUE;
 			}
-		}
+		});
 
-		return builder.build();
+		return filtered.build();
 	}
 
 	private PathUtils() {
