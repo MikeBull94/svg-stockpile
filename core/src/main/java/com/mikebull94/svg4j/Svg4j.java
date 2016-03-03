@@ -61,7 +61,7 @@ public final class Svg4j {
 	);
 
 	/**
-	 * Stacks an array of {@link Path}s into an optimized SVG {@link XmlDocument}.
+	 * Stacks {@link XMLEvent}s read from an array of {@link Path}s into an optimized SVG {@link XmlDocument}.
 	 * @param viewBox The stacked SVG's view-box.
 	 * @param paths The {@link Path}s to stack.
 	 * @return The stacked and optimized SVG {@link XmlDocument}.
@@ -73,7 +73,7 @@ public final class Svg4j {
 	}
 
 	/**
-	 * Stacks an {@link Iterable} of {@link Path}s into an optimized SVG {@link XmlDocument}.
+	 * Stacks {@link XMLEvent}s read from an {@link Iterable} of {@link Path}s into an optimized SVG {@link XmlDocument}.
 	 * @param viewBox The stacked SVG's view-box.
 	 * @param paths The {@link Path}s to stack.
 	 * @return The stacked and optimized SVG {@link XmlDocument}.
@@ -96,7 +96,7 @@ public final class Svg4j {
 	}
 
 	/**
-	 * Stacks a {@link Path} into an optimized SVG {@link XmlDocument}
+	 * Stacks {@link XMLEvent}s read from a {@link Path} into an optimized SVG {@link XmlDocument}.
 	 * @param path The {@link Path} to stack.
 	 * @return The stacked and optimized SVG {@link XmlDocument}.
 	 * @throws IOException If an I/O error occurs.
@@ -113,10 +113,20 @@ public final class Svg4j {
 		String id = filename.toString().substring(0, filename.toString().lastIndexOf('.'));
 
 		try (InputStream inputStream = new FileInputStream(path.toFile())) {
-			XmlDocument document = factory.create(id, inputStream);
-			logger.info("Stacked {} XML events into #{}", document.getEvents().size(), id);
-			return document;
+			return stack(id, inputStream);
 		}
+	}
+
+	/**
+	 * Stacks {@link XMLEvent}s read from an {@link InputStream} into an optimized SVG {@link XmlDocument}.
+	 * @param inputStream The {@link InputStream} to read {@link XMLEvent}s from.
+	 * @return The stacked and optimized SVG {@link XmlDocument}.
+	 * @throws XMLStreamException If an XML error occurs.
+	 */
+	public XmlDocument stack(String id, InputStream inputStream) throws XMLStreamException {
+		XmlDocument document = factory.create(id, inputStream);
+		logger.info("Stacked {} XML events into #{}", document.getEvents().size(), id);
+		return document;
 	}
 
 	@Override
