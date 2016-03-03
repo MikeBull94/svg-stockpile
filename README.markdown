@@ -59,7 +59,7 @@ X)
 * [Google Guava][guava]
 * [SLF4J][slf4j] (for logging)
 * [JUnit][junit] (for unit tests)
-* [APIviz] (for UML-like class diagrams in the generated Javadoc)
+* [APIviz][apiviz] (for UML-like class diagrams in the generated Javadoc)
 * [FindBugs™][findbugs] (for Java code linting)
 * [PMD][pmd] (for Java codde linting)
 
