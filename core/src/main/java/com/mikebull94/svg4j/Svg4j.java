@@ -41,13 +41,17 @@ public final class Svg4j {
 	private static final Path OUTPUT = Paths.get("core/build/resources/main/output.svg");
 	private static final Predicate<Path> HAS_SVG_EXTENSION = path -> path.toString().endsWith(".svg");
 
-	public static void main(String... args) throws IOException, XMLStreamException {
-		logger.info("Starting svg4j...");
-		Svg4j svg4j = new Svg4j();
+	public static void main(String... args) {
+		try {
+			logger.info("Starting svg4j...");
+			Svg4j svg4j = new Svg4j();
 
-		XmlDocument stacked = svg4j.stack(VIEW_BOX, PathUtils.listRecursive(DIRECTORY, HAS_SVG_EXTENSION));
-		Path output = stacked.write(OUTPUT);
-		logger.info("Svg4j complete. Output: {}", output);
+			XmlDocument stacked = svg4j.stack(VIEW_BOX, PathUtils.listRecursive(DIRECTORY, HAS_SVG_EXTENSION));
+			Path output = stacked.write(OUTPUT);
+			logger.info("svg4j complete. Output: {}", output);
+		} catch (Throwable t) {
+			logger.error("Failed to run svg4j.", t);
+		}
 	}
 
 	/**
