@@ -1,0 +1,125 @@
+defaultTasks 'clean', 'build', 'aggregateJavadoc'
+
+group = 'com.mikebull94'
+version = '1.0-SNAPSHOT'
+
+apply plugin: 'com.github.ben-manes.versions'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath group: 'com.github.ben-manes', name: 'gradle-versions-plugin', version: gradleVersionsPluginVersion
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    doclet
+}
+
+dependencies {
+    doclet group: 'com.grahamedgecombe.apiviz', name: 'apiviz', version: apivizVersion
+}
+
+subprojects {
+    apply plugin: 'findbugs'
+    apply plugin: 'java'
+    apply plugin: 'pmd'
+
+    sourceCompatibility = javaCompatibilityVersion
+    targetCompatibility = javaCompatibilityVersion
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile group: 'com.google.guava', name: 'guava', version: guavaVersion
+        compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+        compile group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4jVersion
+        testCompile group: 'junit', name: 'junit', version: junitVersion
+    }
+
+    tasks.withType(FindBugs) {
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    tasks.withType(Pmd) {
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        ruleSetFiles = rootProject.files('pmd-ruleset.xml')
+        ruleSets = [ ]
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { selection ->
+            def rejected = [ 'alpha', 'beta', 'rc', 'cr', 'm' ].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
+
+task aggregateJavadoc(type: Javadoc) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = 'Generates aggregated Javadoc API documentation for the main source code of all sub-projects.'
+
+    doFirst {
+        subprojects.each { project ->
+            project.sourceSets.main.output.each { dir ->
+                dir.mkdirs()
+            }
+        }
+    }
+
+    source subprojects.javadoc.source
+    destinationDir file("$buildDir/docs/javadoc")
+    classpath = files(subprojects.javadoc.classpath)
+
+    options.addStringOption('sourceclasspath', files(subprojects.collect {
+        it.sourceSets.main.output
+    }).asPath)
+    options.addBooleanOption('nopackagediagram', true)
+
+    options.docletpath = configurations.doclet.files.asType(List)
+    options.doclet = 'org.jboss.apiviz.APIviz'
+
+    title = 'svg4j'
+
+    options.showAll()
+    options.links 'https://docs.oracle.com/javase/8/docs/api/'
+    options.links "https://google.github.io/guava/releases/$guavaVersion/api/docs/"
+    options.links 'http://www.slf4j.org/api/'
+}
+
+task wrapper(type: Wrapper) {
+    group = 'Build Setup'
+    description = 'Generates Gradle wrapper files, with sources.'
+    gradleVersion = gradleWrapperVersion
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+task clean {
+    group = BasePlugin.BUILD_GROUP
+    description = 'Deletes the build directory.'
+    delete rootProject.buildDir
+}
