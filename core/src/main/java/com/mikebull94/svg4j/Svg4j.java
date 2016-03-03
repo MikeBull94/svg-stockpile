@@ -39,7 +39,7 @@ public final class Svg4j {
 	private static final SvgViewBox VIEW_BOX = new SvgViewBox(0, 0, 500, 500);
 	private static final Path DIRECTORY = Paths.get("core/src/main/resources");
 	private static final Path OUTPUT = Paths.get("core/build/resources/main/output.svg");
-	private static final Predicate<Path> HAS_SVG_EXTENSION = path -> path.toString().endsWith(".svg");
+	private static final Predicate<Path> HAS_SVG_EXTENSION = path -> path.toString().toLowerCase().endsWith(".svg");
 
 	public static void main(String... args) {
 		try {
