@@ -107,14 +107,20 @@ public final class Svg4j {
 	 * @throws XMLStreamException If an XML error occurs.
 	 */
 	public XmlDocument stack(Path path) throws IOException, XMLStreamException {
+		logger.info("Stacking: {}", path);
+
 		Path filename = path.getFileName();
 
 		if (filename == null) {
 			throw new IOException("Path filename has zero elements " + path);
 		}
 
-		logger.info("Stacking: {}", path);
-		String id = filename.toString().substring(0, filename.toString().lastIndexOf('.'));
+		String id = filename.toString();
+		int lastPeriod = id.lastIndexOf('.');
+
+		if (lastPeriod != -1) {
+			id = id.substring(0, lastPeriod);
+		}
 
 		try (InputStream inputStream = new FileInputStream(path.toFile())) {
 			return stack(id, inputStream);
