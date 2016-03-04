@@ -27,6 +27,11 @@ public final class SvgDocument {
 	private static final XMLEventFactory events = XMLEventFactory.newFactory();
 
 	/**
+	 * The file extension used to identify SVG documents.
+	 */
+	public static final String FILE_EXTENSION = "svg";
+
+	/**
 	 * The namespace for SVG documents.
 	 */
 	public static final String NAMESPACE = "svg";
@@ -93,9 +98,7 @@ public final class SvgDocument {
 		Collection<Attribute> attributes = new ArrayList<>();
 		attributes.add(events.createAttribute(XmlDocument.NAMESPACE, NAMESPACE_URI));
 		attributes.add(events.createAttribute(XmlDocument.NAMESPACE + ":" + NAMESPACE, NAMESPACE_URI));
-		attributes.add(events.createAttribute("width", String.valueOf(viewBox.getWidth())));
-		attributes.add(events.createAttribute("height", String.valueOf(viewBox.getHeight())));
-		attributes.add(events.createAttribute("viewBox", viewBox.format()));
+		attributes.addAll(viewBox.attributes());
 		return events.createStartElement(SVG_TAG, attributes.iterator(), Collections.emptyIterator());
 	}
 

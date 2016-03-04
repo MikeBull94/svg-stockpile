@@ -27,7 +27,9 @@ public domain.
 ```java
 Svg4j svg4j = new Svg4j();
 SvgViewBox viewBox = new SvgViewBox(0, 0, 500, 500);
-XmlDocument stacked = svg4j.stack(viewBox, Paths.get("input1.svg"), Paths.get("input2.svg"));
+Path svg1 = PathUtils.getSvg("input", "svg1");
+Path svg2 = PathUtils.getSvg("input", "svg2");
+XmlDocument stacked = svg4j.stack(viewBox, svg1, svg2);
 Path output = result.write(Paths.get("output.svg"));
 ```
 

@@ -1,6 +1,7 @@
 package com.mikebull94.svg4j;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import com.mikebull94.svg4j.util.PathUtils;
@@ -37,17 +38,20 @@ public final class Svg4j {
 	private static final Logger logger = LoggerFactory.getLogger(Svg4j.class);
 
 	private static final SvgViewBox VIEW_BOX = new SvgViewBox(0, 0, 500, 500);
-	private static final Path DIRECTORY = Paths.get("core/src/main/resources");
-	private static final Path OUTPUT = Paths.get("core/build/resources/main/output.svg");
-	private static final Predicate<Path> HAS_SVG_EXTENSION = path -> path.toString().toLowerCase().endsWith(".svg");
+	private static final Path INPUT_DIRECTORY = Paths.get("core", "src", "main", "resources");
+	private static final Path OUTPUT_SVG = PathUtils.getSvg("core", "build", "resources", "main", "output");
+
+	private static final Predicate<Path> HAS_SVG_EXTENSION = PathUtils::hasSvgExtension;
 
 	public static void main(String... args) {
 		try {
 			logger.info("Starting svg4j...");
-			Svg4j svg4j = new Svg4j();
 
-			XmlDocument stacked = svg4j.stack(VIEW_BOX, PathUtils.filterPathsIn(DIRECTORY, HAS_SVG_EXTENSION));
-			Path output = stacked.write(OUTPUT);
+			Svg4j svg4j = new Svg4j();
+			ImmutableList<Path> input = PathUtils.filterPathsIn(INPUT_DIRECTORY, HAS_SVG_EXTENSION);
+			XmlDocument stacked = svg4j.stack(VIEW_BOX, input);
+			Path output = stacked.write(OUTPUT_SVG);
+
 			logger.info("svg4j complete. Output: {}", output);
 		} catch (Throwable t) {
 			logger.error("Failed to run svg4j.", t);
@@ -85,6 +89,9 @@ public final class Svg4j {
 	 * @throws XMLStreamException If an XML error occurs.
 	 */
 	public XmlDocument stack(SvgViewBox viewBox, Iterable<Path> paths) throws IOException, XMLStreamException {
+		Preconditions.checkNotNull(viewBox);
+		Preconditions.checkNotNull(paths);
+
 		ImmutableList.Builder<XMLEvent> builder = ImmutableList.builder();
 
 		builder.add(SvgDocument.svgStart(viewBox));
@@ -109,13 +116,13 @@ public final class Svg4j {
 	public XmlDocument stack(Path path) throws IOException, XMLStreamException {
 		logger.info("Stacking: {}", path);
 
-		Path filename = path.getFileName();
+		Path fileName = path.getFileName();
 
-		if (filename == null) {
-			throw new IOException("Path " + path + " has zero elements.");
+		if (fileName == null) {
+			throw new IllegalArgumentException("Path " + path + " has zero elements.");
 		}
 
-		String id = Files.getNameWithoutExtension(filename.toString());
+		String id = Files.getNameWithoutExtension(fileName.toString());
 
 		try (InputStream inputStream = new FileInputStream(path.toFile())) {
 			return stack(id, inputStream);

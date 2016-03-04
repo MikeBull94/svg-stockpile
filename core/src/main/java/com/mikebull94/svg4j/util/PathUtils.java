@@ -1,14 +1,21 @@
 package com.mikebull94.svg4j.util;
 
 import com.google.common.collect.ImmutableList;
+import com.mikebull94.svg4j.xml.svg.SvgDocument;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.function.Predicate;
+
+import static com.google.common.io.Files.getFileExtension;
 
 /**
  * Contains {@link Path} related utility methods.
@@ -19,6 +26,46 @@ public final class PathUtils {
 	 * An empty {@link Predicate} that will always return {@code true}.
 	 */
 	private static final Predicate<Path> UNFILTERED = path -> true;
+
+	/**
+	 * Converts a path string, or a sequence of strings that when joined form a path string, to a {@code Path} suffixed
+	 * with the {@link SvgDocument#FILE_EXTENSION}.
+	 * @param first The path string or initial part of the path string
+	 * @param more Additional strings to be joined to form the path string
+	 * @return The {@link Path} to the SVG document.
+	 */
+	public static Path getSvg(String first, String... more) {
+		Deque<String> extra = new ArrayDeque<>();
+		Collections.addAll(extra, more);
+		String last = extra.pollLast();
+		last += '.' + SvgDocument.FILE_EXTENSION;
+		extra.addLast(last);
+		return Paths.get(first, extra.toArray(new String[extra.size()]));
+	}
+
+	/**
+	 * A flag indicating whether a {@link Path} is suffixed with the {@link SvgDocument#FILE_EXTENSION}.
+	 * @param path The {@link Path}.
+	 * @return {@code true} if so, {@code false} otherwise.
+	 */
+	public static boolean hasSvgExtension(Path path) {
+		Path fileName = path.getFileName();
+
+		if (fileName == null) {
+			throw new IllegalArgumentException("Path " + path + " has zero elements.");
+		}
+
+		return hasSvgExtension(fileName.toString());
+	}
+
+	/**
+	 * A flag indicating whether a given file name is suffixed with the {@link SvgDocument#FILE_EXTENSION}.
+	 * @param fileName The given file name.
+	 * @return {@code true} if so, {@code false} otherwise.
+	 */
+	public static boolean hasSvgExtension(String fileName) {
+		return getFileExtension(fileName).equalsIgnoreCase(SvgDocument.FILE_EXTENSION);
+	}
 
 	/**
 	 * Recursively lists all {@link Path}s.

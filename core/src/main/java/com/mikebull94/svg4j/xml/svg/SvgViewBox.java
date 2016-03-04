@@ -1,7 +1,10 @@
 package com.mikebull94.svg4j.xml.svg;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.events.Attribute;
 import java.util.Objects;
 
 /**
@@ -9,6 +12,11 @@ import java.util.Objects;
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox">viewBox</a>
  */
 public final class SvgViewBox {
+
+	/**
+	 * Used to create SVG view-box {@link Attribute}s.
+	 */
+	private static final XMLEventFactory events = XMLEventFactory.newFactory();
 
 	/**
 	 * The format of the viewBox attribute.
@@ -50,44 +58,15 @@ public final class SvgViewBox {
 	}
 
 	/**
-	 * Formats the {@link SvgViewBox#minX},  {@link SvgViewBox#minY},  {@link SvgViewBox#width}, and
-	 * {@link SvgViewBox#height} according to the {@link SvgViewBox#VIEW_BOX_FORMAT}.
-	 * @return The formatted {@link String}.
+	 * Creates an {@link ImmutableList} of {@link Attribute}s from this {@link SvgViewBox}.
+	 * @return The {@link ImmutableList} of {@link Attribute}s.
 	 */
-	public String format() {
-		return String.format(VIEW_BOX_FORMAT, minX, minY, width, height);
-	}
-
-	/**
-	 * Gets the minimum x-coordinate.
-	 * @return The minimum x-coordinate.
-	 */
-	public int getMinX() {
-		return minX;
-	}
-
-	/**
-	 * Gets the minimum y-coordinate.
-	 * @return The minimum y-coordinate.
-	 */
-	public int getMinY() {
-		return minY;
-	}
-
-	/**
-	 * Gets the width.
-	 * @return The width.
-	 */
-	public int getWidth() {
-		return width;
-	}
-
-	/**
-	 * Gets the height.
-	 * @return The height.
-	 */
-	public int getHeight() {
-		return height;
+	public ImmutableList<Attribute> attributes() {
+		return ImmutableList.of(
+			events.createAttribute("width", String.valueOf(width)),
+			events.createAttribute("height", String.valueOf(height)),
+			events.createAttribute("viewBox", String.format(VIEW_BOX_FORMAT, minX, minY, width, height))
+		);
 	}
 
 	@Override
