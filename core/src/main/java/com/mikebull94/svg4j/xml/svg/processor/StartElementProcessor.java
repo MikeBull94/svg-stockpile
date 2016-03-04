@@ -1,7 +1,6 @@
 package com.mikebull94.svg4j.xml.svg.processor;
 
 import com.google.common.collect.ImmutableList;
-import com.mikebull94.svg4j.xml.XmlEventProcessor;
 import com.mikebull94.svg4j.xml.svg.SvgDocument;
 
 import javax.xml.namespace.QName;

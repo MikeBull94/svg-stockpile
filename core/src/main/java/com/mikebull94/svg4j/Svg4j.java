@@ -6,13 +6,13 @@ import com.google.common.collect.ImmutableList;
 import com.mikebull94.svg4j.util.PathUtils;
 import com.mikebull94.svg4j.xml.XmlDocument;
 import com.mikebull94.svg4j.xml.XmlDocumentFactory;
-import com.mikebull94.svg4j.xml.XmlEventProcessor;
 import com.mikebull94.svg4j.xml.svg.SvgDocument;
 import com.mikebull94.svg4j.xml.svg.SvgViewBox;
 import com.mikebull94.svg4j.xml.svg.processor.EndElementProcessor;
 import com.mikebull94.svg4j.xml.svg.processor.FilterXmlEventProcessor;
 import com.mikebull94.svg4j.xml.svg.processor.StartElementProcessor;
 import com.mikebull94.svg4j.xml.svg.processor.SvgTagProcessor;
+import com.mikebull94.svg4j.xml.svg.processor.XmlEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -64,6 +64,7 @@ batch file)
 * [Google Guava][guava]
 * [SLF4J][slf4j] (for logging)
 * [JUnit][junit] (for unit tests)
+* [Mockito][mockito] (for unit tests)
 * [APIviz][apiviz] (for UML-like class diagrams in the generated Javadoc)
 * [FindBugs™][findbugs] (for Java code linting)
 * [PMD][pmd] (for Java code linting)
@@ -85,6 +86,7 @@ This project is available under the terms of the ISC license. See the
 [findbugs]: http://findbugs.sourceforge.net/
 [pmd]: https://pmd.github.io/
 [lint]: https://en.wikipedia.org/wiki/Lint_%28software%29
+[mockito]: http://mockito.org/
 [guava]: https://github.com/google/guava
 [slf4j]: http://slf4j.org/
 [junit]: http://junit.org/
