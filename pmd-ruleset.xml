@@ -51,7 +51,7 @@
         </properties>
     </rule>
 
-    <!-- Contains rules that find empty statements of any kind (empty method, empty block statement, empty try or catch block,â€¦). -->
+    <!-- Contains rules that find empty statements of any kind (empty method, empty block statement, empty try or catch block,...). -->
     <rule ref="rulesets/java/empty.xml" />
 
     <!-- Allow empty catch blocks only if they have a comment inside of them. -->
