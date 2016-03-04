@@ -49,6 +49,26 @@ public final class SvgTagProcessor implements XmlEventProcessor {
 	 */
 	private static final String HIDDEN_CLASS_VALUE = "i";
 
+	/**
+	 * Creates a {@link StartElement} with the {@link SvgDocument#EMBEDDED_SVG_TAG}.
+	 * @param id The id {@link Attribute} value.
+	 * @return The {@link StartElement}.
+	 */
+	private static XMLEvent embeddedSvgStartElement(String id) {
+		Collection<Attribute> attributes = new ArrayList<>();
+		attributes.add(events.createAttribute(ID_KEY, id));
+		attributes.add(events.createAttribute(HIDDEN_CLASS_KEY, HIDDEN_CLASS_VALUE));
+		return events.createStartElement(SvgDocument.EMBEDDED_SVG_TAG, attributes.iterator(), emptyIterator());
+	}
+
+	/**
+	 * Creates an {@link EndElement} with the {@link SvgDocument#EMBEDDED_SVG_TAG}.
+	 * @return The {@link EndElement}.
+	 */
+	private static XMLEvent embeddedSvgEndElement() {
+		return events.createEndElement(SvgDocument.EMBEDDED_SVG_TAG, emptyIterator());
+	}
+
 	@Override
 	public boolean accepts(XMLEvent event) {
 		QName name;
@@ -61,27 +81,19 @@ public final class SvgTagProcessor implements XmlEventProcessor {
 			return false;
 		}
 
-		return SvgDocument.valid(name) && name.equals(SvgDocument.SVG_TAG);
+		return SvgDocument.optimized(name) && name.equals(SvgDocument.SVG_TAG);
 	}
 
 	@Override
 	public ImmutableList<XMLEvent> process(String id, XMLEvent event) {
 		Preconditions.checkNotNull(id);
 
-		XMLEvent result;
-
 		if (event.isStartElement()) {
-			Collection<Attribute> attributes = new ArrayList<>();
-			attributes.add(events.createAttribute(ID_KEY, id));
-			attributes.add(events.createAttribute(HIDDEN_CLASS_KEY, HIDDEN_CLASS_VALUE));
-
-			result = events.createStartElement(SvgDocument.EMBEDDED_SVG_TAG, attributes.iterator(), emptyIterator());
+			return ImmutableList.of(embeddedSvgStartElement(id));
 		} else if (event.isEndElement()) {
-			result = events.createEndElement(SvgDocument.EMBEDDED_SVG_TAG, emptyIterator());
+			return ImmutableList.of(embeddedSvgEndElement());
 		} else {
 			throw new IllegalArgumentException("Event must be start or end element.");
 		}
-
-		return ImmutableList.of(result);
 	}
 }

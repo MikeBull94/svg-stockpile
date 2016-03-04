@@ -3,7 +3,6 @@ package com.mikebull94.svg4j;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
 import com.mikebull94.svg4j.util.PathUtils;
 import com.mikebull94.svg4j.xml.XmlDocument;
 import com.mikebull94.svg4j.xml.XmlDocumentFactory;
@@ -19,13 +18,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.function.Predicate;
+
+import static com.google.common.io.Files.getNameWithoutExtension;
 
 /**
  * Svg4j is an optimizing and stacking tool for <a href="https://www.w3.org/Graphics/SVG/">Scalable Vector Graphics</a>.
@@ -122,9 +123,9 @@ public final class Svg4j {
 			throw new IllegalArgumentException("Path " + path + " has zero elements.");
 		}
 
-		String id = Files.getNameWithoutExtension(fileName.toString());
+		String id = getNameWithoutExtension(fileName.toString());
 
-		try (InputStream inputStream = new FileInputStream(path.toFile())) {
+		try (InputStream inputStream = Files.newInputStream(path)) {
 			return stack(id, inputStream);
 		}
 	}

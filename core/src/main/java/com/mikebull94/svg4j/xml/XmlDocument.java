@@ -11,9 +11,9 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.util.XMLEventConsumer;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
@@ -73,7 +73,7 @@ public final class XmlDocument {
 	 * @throws XMLStreamException If an XML error occurs.
 	 */
 	public Path write(Path path) throws IOException, XMLStreamException {
-		try (OutputStream outputStream = new FileOutputStream(path.toFile())) {
+		try (OutputStream outputStream = Files.newOutputStream(path)) {
 			write(outputStream);
 		}
 		return path;

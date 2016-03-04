@@ -74,7 +74,7 @@ public final class SvgDocument {
 	/**
 	 * An {@link ImmutableSet} of {@link QName}s to deem invalid with regards to an optimized SVG specification.
 	 */
-	private static final ImmutableSet<QName> INVALID = ImmutableSet.of(
+	private static final ImmutableSet<QName> UNOPTIMIZED = ImmutableSet.of(
 		METADATA_TAG,
 		DEFS_TAG,
 		GROUP_TAG
@@ -85,8 +85,8 @@ public final class SvgDocument {
 	 * @param name The {@link QName}.
 	 * @return {@code true} if so, {@code false} otherwise.
 	 */
-	public static boolean valid(QName name) {
-		return name.getNamespaceURI().equals(NAMESPACE_URI) && !INVALID.contains(name);
+	public static boolean optimized(QName name) {
+		return name.getNamespaceURI().equals(NAMESPACE_URI) && !UNOPTIMIZED.contains(name);
 	}
 
 	/**

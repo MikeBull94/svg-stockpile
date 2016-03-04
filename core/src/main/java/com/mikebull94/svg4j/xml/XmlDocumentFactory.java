@@ -16,8 +16,8 @@ import java.util.Set;
 
 /**
  * A factory for creating {@link XmlDocument}s. All parsed {@link XMLEvent}s are processed by the {@link Set} of
- * registered {@link XmlEventProcessor}s using {@link XmlEventProcessor#process(String, XMLEvent)}, with the result attributing
- * to the final {@link XmlDocument}.
+ * registered {@link XmlEventProcessor}s using {@link XmlEventProcessor#process(String, XMLEvent)}, with the result
+ * attributing to the final {@link XmlDocument}.
  */
 public final class XmlDocumentFactory {
 

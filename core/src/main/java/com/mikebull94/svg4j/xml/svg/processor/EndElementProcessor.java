@@ -21,7 +21,7 @@ public final class EndElementProcessor implements XmlEventProcessor {
 		}
 
 		QName name = event.asEndElement().getName();
-		return SvgDocument.valid(name) && !name.equals(SvgDocument.SVG_TAG) && !name.equals(SvgDocument.GROUP_TAG);
+		return SvgDocument.optimized(name) && !name.equals(SvgDocument.SVG_TAG) && !name.equals(SvgDocument.GROUP_TAG);
 	}
 
 	@Override
