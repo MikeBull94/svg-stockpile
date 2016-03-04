@@ -4,8 +4,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
-    <description>PMD ruleset that the back-end module must conform to.</description>
-
     <!-- Rule descriptions found at: https://pmd.github.io/pmd-5.4.0/pmd-java/rules/index.html -->
 
     <!-- Contains a collection of good practices which should be followed. -->
