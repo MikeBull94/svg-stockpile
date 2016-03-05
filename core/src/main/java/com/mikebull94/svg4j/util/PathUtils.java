@@ -7,12 +7,8 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.function.Predicate;
 
 import static com.google.common.io.Files.getFileExtension;
@@ -26,22 +22,6 @@ public final class PathUtils {
 	 * An empty {@link Predicate} that will always return {@code true}.
 	 */
 	private static final Predicate<Path> UNFILTERED = path -> true;
-
-	/**
-	 * Converts a path string, or a sequence of strings that when joined form a path string, to a {@code Path} suffixed
-	 * with the {@link SvgDocument#FILE_EXTENSION}.
-	 * @param first The path string or initial part of the path string
-	 * @param more Additional strings to be joined to form the path string
-	 * @return The {@link Path} to the SVG document.
-	 */
-	public static Path getSvg(String first, String... more) {
-		Deque<String> extra = new ArrayDeque<>();
-		Collections.addAll(extra, more);
-		String last = extra.pollLast();
-		last += '.' + SvgDocument.FILE_EXTENSION;
-		extra.addLast(last);
-		return Paths.get(first, extra.toArray(new String[extra.size()]));
-	}
 
 	/**
 	 * A flag indicating whether a {@link Path} is suffixed with the {@link SvgDocument#FILE_EXTENSION}.

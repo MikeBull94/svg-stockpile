@@ -40,7 +40,7 @@ public final class Svg4j {
 
 	private static final SvgViewBox VIEW_BOX = new SvgViewBox(0, 0, 500, 500);
 	private static final Path INPUT_DIRECTORY = Paths.get("core", "src", "main", "resources");
-	private static final Path OUTPUT_SVG = PathUtils.getSvg("core", "build", "resources", "main", "output");
+	private static final Path OUTPUT_SVG = Paths.get("core", "build", "resources", "main", "output.svg");
 
 	private static final Predicate<Path> HAS_SVG_EXTENSION = PathUtils::hasSvgExtension;
 
