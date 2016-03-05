@@ -1,63 +1,68 @@
 package com.mikebull94.svg4j.xml.svg.processor;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
+
+import static com.mikebull94.svg4j.xml.svg.processor.EndElementBehaviour.eventIsEndElement;
+import static com.mikebull94.svg4j.xml.svg.processor.EndElementBehaviour.eventIsNotEndElement;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.acceptanceCheck;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventAccepted;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventProcessed;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventRejected;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.process;
 
 /**
  * Contains unit tests for the {@link EndElementProcessor}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public final class EndElementProcessorTest extends XmlEventProcessorTest {
-	@Override
-	public XmlEventProcessor createTestee() {
-		return new EndElementProcessor();
+public final class EndElementProcessorTest {
+	private XmlEventProcessorTester test;
+
+	@Before
+	public void setUp() {
+		test = XmlEventProcessorTester.test(new EndElementProcessor());
+		MockitoAnnotations.initMocks(test);
 	}
 
 	@Test
 	public void rejectNonEndElement() {
-		givenEventIsNotEndElement();
-		whenAcceptanceCheck();
-		thenEventRejected();
+		test.given(eventIsNotEndElement())
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
 	@Test
-	public void rejectUnoptimized() {
-		givenEventIsEndElement();
-		givenEndElementHasName("defs");
-		whenAcceptanceCheck();
-		thenEventRejected();
+	public void rejectUnoptimizedEvent() {
+		test.given(eventIsEndElement("defs"))
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
 	@Test
 	public void rejectSvgTag() {
-		givenEventIsEndElement();
-		givenEndElementHasName("svg");
-		whenAcceptanceCheck();
-		thenEventRejected();
+		test.given(eventIsEndElement("svg"))
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
 	@Test
 	public void rejectSvgGroupTag() {
-		givenEventIsEndElement();
-		givenEndElementHasName("g");
-		whenAcceptanceCheck();
-		thenEventRejected();
+		test.given(eventIsEndElement("g"))
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
 	@Test
-	public void acceptEndElement() {
-		givenEventIsEndElement();
-		givenEndElementHasName("rect");
-		whenAcceptanceCheck();
-		thenEventAccepted();
+	public void testAccept() {
+		test.given(eventIsEndElement("rect"))
+			.when(acceptanceCheck())
+			.then(eventAccepted());
 	}
 
 	@Test
-	public void processesEndElement() {
-		givenEventIsEndElement();
-		givenEndElementHasName("path");
-		whenEventProcessed();
-		thenEventProcessed();
+	public void testProcess() {
+		test.given(eventIsEndElement("rect"))
+			.when(process())
+			.then(eventProcessed());
 	}
 }

@@ -1,89 +1,79 @@
 package com.mikebull94.svg4j.xml.svg.processor;
 
-import com.mikebull94.svg4j.xml.svg.SvgDocument;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static java.util.Collections.emptyIterator;
+import static com.mikebull94.svg4j.xml.svg.processor.EndElementBehaviour.eventIsEndElement;
+import static com.mikebull94.svg4j.xml.svg.processor.EndElementBehaviour.eventIsNotEndElement;
+import static com.mikebull94.svg4j.xml.svg.processor.EndElementBehaviour.resultContainsSvgEndElement;
+import static com.mikebull94.svg4j.xml.svg.processor.StartElementBehaviour.eventIsNotStartElement;
+import static com.mikebull94.svg4j.xml.svg.processor.StartElementBehaviour.eventIsStartElement;
+import static com.mikebull94.svg4j.xml.svg.processor.StartElementBehaviour.resultContainsSvgStartElement;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.acceptanceCheck;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventAccepted;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventRejected;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.process;
 
 /**
  * Contains unit tests for the {@link SvgTagProcessor}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public final class SvgTagProcessorTest extends XmlEventProcessorTest {
-	@Override
-	public XmlEventProcessor createTestee() {
-		return new SvgTagProcessor();
+public final class SvgTagProcessorTest {
+	private XmlEventProcessorTester test;
+
+	@Before
+	public void setUp() {
+		test = XmlEventProcessorTester.test(new SvgTagProcessor());
+		MockitoAnnotations.initMocks(test);
 	}
 
 	@Test
 	public void rejectNonStartOrEndElement() {
-		givenEventIsNotEndElement();
-		givenEventIsNotStartElement();
-		whenAcceptanceCheck();
-		thenEventRejected();
+		test.given(eventIsNotStartElement())
+			.given(eventIsNotEndElement())
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
 	@Test
-	public void rejectUnoptimized() {
-		givenEventIsStartElement();
-		givenStartElementHasName("metadata");
-		whenAcceptanceCheck();
-		thenEventRejected();
+	public void rejectUnoptimizedEvent() {
+		test.given(eventIsStartElement("metadata"))
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
 	@Test
 	public void rejectNonSvgTag() {
-		givenEventIsEndElement();
-		givenEndElementHasName("path");
-		whenAcceptanceCheck();
-		thenEventRejected();
+		test.given(eventIsEndElement("path"))
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
 	@Test
 	public void acceptSvgTag() {
-		givenEventIsStartElement();
-		givenStartElementHasName("svg");
-		whenAcceptanceCheck();
-		thenEventAccepted();
+		test.given(eventIsStartElement("svg"))
+			.when(acceptanceCheck())
+			.then(eventAccepted());
 	}
 
 	@Test
 	public void processesStartElement() {
-		givenEventIsStartElement();
-		givenStartElementHasName("svg");
-		whenEventProcessed();
-
-		Collection<Attribute> attributes = new ArrayList<>();
-		attributes.add(events.createAttribute("id", "test"));
-		attributes.add(events.createAttribute("class", "i"));
-		StartElement expected = events.createStartElement(SvgDocument.EMBEDDED_SVG_TAG, attributes.iterator(), emptyIterator());
-
-		thenResultContains(expected);
+		test.given(eventIsStartElement("svg"))
+			.when(process())
+			.then(resultContainsSvgStartElement());
 	}
 
 	@Test
-	public void processesEndElement() {
-		givenEventIsEndElement();
-		givenEndElementHasName("svg");
-		whenEventProcessed();
-
-		EndElement expected = events.createEndElement(SvgDocument.EMBEDDED_SVG_TAG, emptyIterator());
-
-		thenResultContains(expected);
+	public void processEndElement() {
+		test.given(eventIsEndElement("svg"))
+			.when(process())
+			.then(resultContainsSvgEndElement());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void failsToProcessNonStartOrEndElement() {
-		givenEventIsNotStartElement();
-		givenEventIsNotEndElement();
-		whenEventProcessed();
+		test.given(eventIsNotStartElement())
+			.given(eventIsNotEndElement())
+			.when(process());
 	}
 }

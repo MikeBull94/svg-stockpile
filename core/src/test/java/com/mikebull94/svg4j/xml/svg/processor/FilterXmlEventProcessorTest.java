@@ -1,21 +1,21 @@
 package com.mikebull94.svg4j.xml.svg.processor;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import javax.xml.stream.XMLStreamConstants;
 
-/**
- * Contains unit tests for the {@link EndElementProcessor}.
- */
-@RunWith(MockitoJUnitRunner.class)
-public final class FilterXmlEventProcessorTest extends XmlEventProcessorTest {
-	@Override
-	public XmlEventProcessor createTestee() {
-		return new FilterXmlEventProcessor();
-	}
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.acceptanceCheck;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventAccepted;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventIsOfType;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventProcessed;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventRejected;
+import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.process;
 
+/**
+ * Contains unit tests for the {@link FilterXmlEventProcessor}.
+ */
+public final class FilterXmlEventProcessorTest {
 	@Test
 	public void rejectFiltered() {
 		rejectEventOfType(XMLStreamConstants.START_ELEMENT);
@@ -41,20 +41,29 @@ public final class FilterXmlEventProcessorTest extends XmlEventProcessorTest {
 
 	@Test
 	public void processes() {
-		givenEventIsOfType(XMLStreamConstants.ENTITY_REFERENCE);
-		whenEventProcessed();
-		thenEventProcessed();
+		XmlEventProcessorTester test = XmlEventProcessorTester.test(new FilterXmlEventProcessor());
+		MockitoAnnotations.initMocks(test);
+
+		test.given(eventIsOfType(XMLStreamConstants.ENTITY_REFERENCE))
+			.when(process())
+			.then(eventProcessed());
 	}
 
-	private void rejectEventOfType(int type) {
-		givenEventIsOfType(type);
-		whenAcceptanceCheck();
-		thenEventRejected();
+	private static void rejectEventOfType(int type) {
+		XmlEventProcessorTester test = XmlEventProcessorTester.test(new FilterXmlEventProcessor());
+		MockitoAnnotations.initMocks(test);
+
+		test.given(eventIsOfType(type))
+			.when(acceptanceCheck())
+			.then(eventRejected());
 	}
 
-	private void acceptEventOfType(int type) {
-		givenEventIsOfType(type);
-		whenAcceptanceCheck();
-		thenEventAccepted();
+	private static void acceptEventOfType(int type) {
+		XmlEventProcessorTester test = XmlEventProcessorTester.test(new FilterXmlEventProcessor());
+		MockitoAnnotations.initMocks(test);
+
+		test.given(eventIsOfType(type))
+			.when(acceptanceCheck())
+			.then(eventAccepted());
 	}
 }
