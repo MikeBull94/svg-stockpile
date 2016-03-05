@@ -1,0 +1,44 @@
+/**
+ * Configures a Java build environment with common dependencies when applied to any project.
+ */
+
+apply plugin: 'java'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply plugin: 'idea'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+dependencies {
+    compile group: 'com.google.guava', name: 'guava'
+    compile group: 'org.slf4j', name: 'slf4j-api'
+    compile group: 'org.slf4j', name: 'slf4j-jdk14'
+    testCompile group: 'junit', name: 'junit'
+    testCompile group: 'org.mockito', name: 'mockito-core'
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+tasks.withType(FindBugs) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+tasks.withType(Pmd) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    ruleSetFiles = rootProject.files('pmd-ruleset.xml')
+    ruleSets = [ ]
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}

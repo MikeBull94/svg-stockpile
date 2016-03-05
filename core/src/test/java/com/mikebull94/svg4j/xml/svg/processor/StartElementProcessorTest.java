@@ -84,20 +84,29 @@ public final class StartElementProcessorTest extends XmlEventProcessorTest {
 
 	private void givenStartElementHasAttributes() {
 		Collection<Attribute> attributes = new ArrayList<>();
+		QName name = new QName("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd", "name", "sodipodi");
+
 		attributes.add(events.createAttribute("", SvgDocument.NAMESPACE_URI, "path", "0"));
 		attributes.add(events.createAttribute("", SvgDocument.NAMESPACE_URI, "rect", "0"));
-		attributes.add(events.createAttribute("sodipodi", "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd", "name", "inkscape:something"));
+		attributes.add(events.createAttribute(name, "inkscape:something"));
+
 		when(event.asStartElement().getAttributes()).thenReturn(attributes.iterator());
 	}
 
 	private void thenSvgAttributesRemain() {
 		StartElement element = processResult.get(0).asStartElement();
-		assertNotNull(element.getAttributeByName(new QName(SvgDocument.NAMESPACE_URI, "path")));
-		assertNotNull(element.getAttributeByName(new QName(SvgDocument.NAMESPACE_URI, "rect")));
+		Attribute path = element.getAttributeByName(new QName(SvgDocument.NAMESPACE_URI, "path"));
+		Attribute rect = element.getAttributeByName(new QName(SvgDocument.NAMESPACE_URI, "rect"));
+
+		assertNotNull("Missing path attribute", path);
+		assertNotNull("Missing rect attribute", rect);
 	}
 
 	private void thenNonSvgAttributesRemoved() {
 		StartElement element = processResult.get(0).asStartElement();
-		assertNull(element.getAttributeByName(new QName("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd", "name", "sodipodi")));
+		QName name = new QName("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd", "name", "sodipodi");
+		Attribute attribute = element.getAttributeByName(name);
+
+		assertNull("Non-svg attribute still remains", attribute);
 	}
 }
