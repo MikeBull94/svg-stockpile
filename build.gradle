@@ -82,7 +82,8 @@ task aggregateJavadoc(type: Javadoc) {
         links 'http://www.slf4j.org/api/'
         links "https://google.github.io/guava/releases/${version('com.google.guava:guava')}/api/docs/"
 
-        group 'Utility library', 'com.mikebull94.svg4j.util*'
+        group 'API', 'com.mikebull94.svg4j*'
+        group 'Utility Library', 'com.mikebull94.svg4j.util*'
     }
 }
 
