@@ -9,9 +9,9 @@ import javax.xml.stream.events.XMLEvent;
 
 /**
  * An {@link XmlEventProcessor} that accepts all {@link XMLEvent}s whose {@link XMLEvent#getEventType()} is not
- * contained in {@link FilterXmlEventProcessor#REJECTED_TYPES}, returning an {@link ImmutableList} containing the
- * provided {@link XMLEvent} as the result of processing. This is intended to deal with all {@link XMLEvent}s that are
- * not otherwise covered in the stacking process.
+ * contained in {@link #REJECTED_TYPES}, returning an {@link ImmutableList} containing the provided {@link XMLEvent} as
+ * the result of processing. This is intended to deal with all {@link XMLEvent}s that are not otherwise covered in the
+ * stacking process.
  */
 public final class FilterXmlEventProcessor implements XmlEventProcessor {
 

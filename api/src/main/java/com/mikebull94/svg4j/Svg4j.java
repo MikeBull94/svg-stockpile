@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.function.Predicate;
 
 import static com.google.common.io.Files.getNameWithoutExtension;
 
@@ -34,24 +33,29 @@ import static com.google.common.io.Files.getNameWithoutExtension;
  * finally stacking where appropriate.
  */
 public final class Svg4j {
+
+	/**
+	 * The logger for this class.
+	 */
 	private static final Logger logger = LoggerFactory.getLogger(Svg4j.class);
 
-	private static final SvgViewBox VIEW_BOX = new SvgViewBox(0, 0, 500, 500);
-	private static final Path INPUT_DIRECTORY = Paths.get("core", "src", "main", "resources");
-	private static final Path OUTPUT_SVG = Paths.get("core", "build", "resources", "main", "output.svg");
-
-	private static final Predicate<Path> HAS_SVG_EXTENSION = PathUtils::hasSvgExtension;
-
+	/**
+	 * The entry point of the program.
+	 * @param args The program's arguments.
+	 */
 	public static void main(String... args) {
 		try {
 			logger.info("Starting svg4j...");
-
 			Svg4j svg4j = new Svg4j();
-			ImmutableList<Path> input = PathUtils.filterPathsIn(INPUT_DIRECTORY, HAS_SVG_EXTENSION);
-			XmlDocument stacked = svg4j.stack(VIEW_BOX, input);
-			Path output = stacked.write(OUTPUT_SVG);
 
-			logger.info("svg4j complete. Output: {}", output);
+			Path inputDir = Paths.get("api", "src", "main", "resources");
+			ImmutableList<Path> input = PathUtils.filterPathsIn(inputDir, PathUtils::hasSvgExtension);
+
+			SvgViewBox viewBox = new SvgViewBox(0, 0, 500, 500);
+			XmlDocument stacked = svg4j.stack(viewBox, input);
+
+			Path output = stacked.write(Paths.get("api", "build", "resources", "main", "output.svg"));
+			logger.info("svg4j complete: {}", output);
 		} catch (Throwable t) {
 			logger.error("Failed to run svg4j.", t);
 		}

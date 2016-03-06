@@ -14,6 +14,7 @@ import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.mikebull94.svg4j.xml.svg.SvgDocument.EMBEDDED_SVG_TAG;
 import static java.util.Collections.emptyIterator;
 
 /**
@@ -58,7 +59,7 @@ public final class SvgTagProcessor implements XmlEventProcessor {
 		Collection<Attribute> attributes = new ArrayList<>();
 		attributes.add(events.createAttribute(ID_KEY, id));
 		attributes.add(events.createAttribute(HIDDEN_CLASS_KEY, HIDDEN_CLASS_VALUE));
-		return events.createStartElement(SvgDocument.EMBEDDED_SVG_TAG, attributes.iterator(), emptyIterator());
+		return events.createStartElement(EMBEDDED_SVG_TAG, attributes.iterator(), emptyIterator());
 	}
 
 	/**
@@ -66,7 +67,7 @@ public final class SvgTagProcessor implements XmlEventProcessor {
 	 * @return The {@link EndElement}.
 	 */
 	private static XMLEvent embeddedSvgEndElement() {
-		return events.createEndElement(SvgDocument.EMBEDDED_SVG_TAG, emptyIterator());
+		return events.createEndElement(EMBEDDED_SVG_TAG, emptyIterator());
 	}
 
 	@Override
