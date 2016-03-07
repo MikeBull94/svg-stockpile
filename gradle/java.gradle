@@ -2,6 +2,7 @@
  * Configures a Java build environment with common dependencies when applied to any project.
  */
 
+apply plugin: 'jacoco'
 apply plugin: 'java'
 apply plugin: 'findbugs'
 apply plugin: 'pmd'
@@ -22,6 +23,18 @@ idea {
     module {
         downloadJavadoc = true
         downloadSources = true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+tasks.withType(JacocoReport) {
+    group = 'Reporting'
+    description = 'Generate code coverage reports.'
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "$reportsDir/coverage"
     }
 }
 
