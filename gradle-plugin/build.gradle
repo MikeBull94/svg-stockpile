@@ -23,7 +23,7 @@ dependencies {
     compile gradleApi()
     compile project(':api')
     integTestCompile gradleTestKit()
-    integTestCompile 'org.codehaus.groovy:groovy-all:2.4.6'
+    integTestCompile group: 'org.codehaus.groovy', name: 'groovy-all'
 }
 
 shadowJar {
