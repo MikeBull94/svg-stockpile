@@ -37,20 +37,21 @@ for any purpose within the public domain.
 
 ### API
 
-The API can be interacted with directly:
+The API can be interacted with directly, as in the following example:
 
 ```java
 ImmutableList<Path> input = ImmutableList.of(Paths.get("input_dir"));
 Path output = Paths.get("output.svg");
 SvgViewBox viewBox = new SvgViewBox(0, 0, 500, 500);
 
-Svg4j stacker = Svg4j.createStacker()
-	.viewBox(viewBox)
+Svg4j stacker = Svg4j.createStacker(viewBox)
 	.createSvgStart()
 	.hideEmbeddedSvgs()
 	.read(input)
 	.svgEnd()
 	.write(output);
+
+System.out.println(stacker.size());
 ```
 
 ### Gradle Plugin
@@ -58,7 +59,7 @@ Svg4j stacker = Svg4j.createStacker()
 The API can also be accessed via via a [Gradle Plugin][gradle-plugin]:
 
 ```groovy
-apply plugin: com.mikebull94.svg4j'
+apply plugin: 'com.mikebull94.svg4j'
 
 task stackSvgs(type: Svg4jTask) {
     inputDir = projectDir

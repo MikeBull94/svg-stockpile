@@ -83,11 +83,6 @@ public final class Svg4j {
 		"Expecting program arguments: <inputDir> <output> <viewBoxMinX> <viewBoxMinY> <viewBoxWidth> <viewBoxHeight>";
 
 	/**
-	 * The message to display when the viewBox is not set before processing {@link XMLEvent}s.
-	 */
-	private static final String VIEWBOX_REQUIRED = "viewBox must be set before processing XML events.";
-
-	/**
 	 * The entry point of the program.
 	 * @param args The program's arguments.
 	 */
@@ -112,8 +107,7 @@ public final class Svg4j {
 
 			ImmutableList<Path> input = PathUtils.filterPathsIn(inputDir, PathUtils::hasSvgExtension);
 
-			Svg4j stacker = Svg4j.createStacker()
-				.viewBox(viewBox)
+			Svg4j stacker = Svg4j.createStacker(viewBox)
 				.createSvgStart()
 				.hideEmbeddedSvgs()
 				.read(input)
@@ -129,10 +123,12 @@ public final class Svg4j {
 	/**
 	 * Creates an {@link Svg4j} with a {@link Set} of {@link XmlEventProcessor}s configured to stack and optimize SVG
 	 * documents.
+	 * @param viewBox The {@link SvgViewBox} to provide embedded SVGs with.
 	 * @return The {@link Svg4j}.
+	 * @throws NullPointerException If the {@link SvgViewBox} is null.
 	 */
-	public static Svg4j createStacker() {
-		return create(
+	public static Svg4j createStacker(SvgViewBox viewBox) {
+		return create(viewBox,
 			new FilterXmlEventProcessor(),
 			new SvgTagProcessor(),
 			new StartElementProcessor(),
@@ -142,26 +138,35 @@ public final class Svg4j {
 
 	/**
 	 * Creates an {@link Svg4j} with a {@link Set} of registered {@link XmlEventProcessor}s.
+	 * @param viewBox The {@link SvgViewBox} to provide embedded SVGs with.
 	 * @param processors The {@link XmlEventProcessor}s to register.
 	 * @return The {@link Svg4j}.
+	 * @throws NullPointerException If the {@link SvgViewBox} is null.
 	 */
-	public static Svg4j create(XmlEventProcessor... processors) {
-		return create(ImmutableSet.copyOf(processors));
+	public static Svg4j create(SvgViewBox viewBox, XmlEventProcessor... processors) {
+		return create(viewBox, ImmutableSet.copyOf(processors));
 	}
 
 	/**
 	 * Creates an {@link Svg4j} with a {@link Set} of registered {@link XmlEventProcessor}s.
+	 * @param viewBox The {@link SvgViewBox} to provide embedded SVGs with.
 	 * @param processors The {@link XmlEventProcessor}s to register.
 	 * @return The {@link Svg4j}.
+	 * @throws NullPointerException If the {@link SvgViewBox} or {@link XmlEventProcessor}s are null.
 	 */
-	public static Svg4j create(ImmutableSet<XmlEventProcessor> processors) {
-		return new Svg4j(processors);
+	public static Svg4j create(SvgViewBox viewBox, ImmutableSet<XmlEventProcessor> processors) {
+		return new Svg4j(viewBox, processors);
 	}
 
 	/**
-	 * The {@link XMLEvent}s read and processed from input.
+	 * The processed {@link XMLEvent}s.
 	 */
-	private final List<XMLEvent> readEvents = new ArrayList<>();
+	private final List<XMLEvent> processed = new ArrayList<>();
+
+	/**
+	 * The {@link SvgViewBox} to provide embedded SVGs with.
+	 */
+	private final SvgViewBox viewBox;
 
 	/**
 	 * The {@link XmlEventProcessor}s used to process incoming {@link XMLEvent}s.
@@ -169,61 +174,47 @@ public final class Svg4j {
 	private final ImmutableSet<XmlEventProcessor> processors;
 
 	/**
-	 * The {@link SvgViewBox}.
-	 */
-	private SvgViewBox viewBox;
-
-	/**
 	 * Creates an {@link Svg4j} with a {@link Set} of registered {@link XmlEventProcessor}s.
+	 * @param viewBox The {@link SvgViewBox} to provide embedded SVGs with.
 	 * @param processors The {@link XmlEventProcessor}s to register.
 	 */
-	private Svg4j(ImmutableSet<XmlEventProcessor> processors) {
+	private Svg4j(SvgViewBox viewBox, ImmutableSet<XmlEventProcessor> processors) {
+		this.viewBox = Preconditions.checkNotNull(viewBox);
 		this.processors = Preconditions.checkNotNull(processors);
 	}
 
 	/**
-	 * Creates and processes a {@link StartElement} with the {@code <svg>} tag.
+	 * Adds a {@link StartElement} with the {@code <svg>} tag to the {@link List} of processed {@link XMLEvent}s.
 	 * @return The {@link Svg4j} instance for chaining.
 	 */
 	public Svg4j createSvgStart() {
-		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
 		Collection<Attribute> attributes = new ArrayList<>();
 		attributes.add(events.createAttribute(NAMESPACE, NAMESPACE_URI));
 		attributes.add(events.createAttribute(EMBEDDED_NAMESPACE, NAMESPACE_URI));
 		attributes.addAll(viewBox.attributes());
 
 		StartElement svgStart = events.createStartElement(SVG_TAG, attributes.iterator(), emptyIterator());
-		readEvents.add(svgStart);
+		processed.add(svgStart);
 		return this;
 	}
 
 	/**
-	 * Creates and processes the {@link XMLEvent}s related to hiding embedded SVGs.
+	 * Adds {@link XMLEvent}s related to hiding embedded SVGs to the {@link List} of processed {@link XMLEvent}s.
 	 * @return The {@link Svg4j} instance for chaining.
 	 */
 	public Svg4j hideEmbeddedSvgs() {
-		readEvents.add(events.createStartElement(STYLE_TAG, emptyIterator(), emptyIterator()));
-		readEvents.add(events.createCharacters(".i {display:none;}.i:target {display:block;}"));
-		readEvents.add(events.createEndElement(STYLE_TAG, emptyIterator()));
+		processed.add(events.createStartElement(STYLE_TAG, emptyIterator(), emptyIterator()));
+		processed.add(events.createCharacters(".i {display:none;}.i:target {display:block;}"));
+		processed.add(events.createEndElement(STYLE_TAG, emptyIterator()));
 		return this;
 	}
 
 	/**
-	 * Creates and process an {@link EndElement} with the {@code <svg>} tag.
+	 * Adds an {@link EndElement} with the {@code <svg>} tag to the {@link List} of processed {@link XMLEvent}s.
 	 * @return The {@link Svg4j} instance for chaining.
 	 */
 	public Svg4j svgEnd() {
-		readEvents.add(events.createEndElement(SVG_TAG, emptyIterator()));
-		return this;
-	}
-
-	/**
-	 * Sets the {@link SvgViewBox}.
-	 * @param viewBox The {@link SvgViewBox} to set.
-	 * @return The {@link Svg4j} instance for chaining.
-	 */
-	public Svg4j viewBox(SvgViewBox viewBox) {
-		this.viewBox = Preconditions.checkNotNull(viewBox);
+		processed.add(events.createEndElement(SVG_TAG, emptyIterator()));
 		return this;
 	}
 
@@ -236,7 +227,6 @@ public final class Svg4j {
 	 * @throws NullPointerException If the {@link SvgViewBox} or {@link Path} are null.
 	 */
 	public Svg4j read(Path path) throws IOException, XMLStreamException {
-		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
 		Preconditions.checkNotNull(path);
 
 		logger.info("Stacking: {}", path);
@@ -275,8 +265,6 @@ public final class Svg4j {
 	 * @throws NullPointerException If the {@link SvgViewBox} or {@link Path}s are null.
 	 */
 	public Svg4j read(Iterable<Path> paths) throws IOException, XMLStreamException {
-		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
-
 		for (Path path : paths) {
 			read(path);
 		}
@@ -293,7 +281,6 @@ public final class Svg4j {
 	 * @throws NullPointerException If the {@link SvgViewBox} or {@code id} are null.
 	 */
 	public Svg4j read(String id, InputStream inputStream) throws XMLStreamException {
-		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
 		Preconditions.checkNotNull(id);
 
 		XMLEventReader reader = input.createXMLEventReader(inputStream);
@@ -305,7 +292,7 @@ public final class Svg4j {
 				processors.stream()
 					.parallel()
 					.filter(processor -> processor.accepts(event))
-					.forEach(processor -> readEvents.addAll(processor.process(id, event)));
+					.forEach(processor -> processed.addAll(processor.process(id, event)));
 			}
 		} finally {
 			reader.close();
@@ -368,13 +355,17 @@ public final class Svg4j {
 	 * @throws XMLStreamException If an XML error occurs.
 	 */
 	public Svg4j addEventsTo(XMLEventConsumer consumer) throws XMLStreamException {
-		for (XMLEvent event : readEvents) {
+		for (XMLEvent event : processed) {
 			consumer.add(event);
 		}
 		return this;
 	}
 
+	/**
+	 * Gets the number of processed {@link XMLEvent}s.
+	 * @return The number of processed {@link XMLEvent}s.
+	 */
 	public int size() {
-		return readEvents.size();
+		return processed.size();
 	}
 }

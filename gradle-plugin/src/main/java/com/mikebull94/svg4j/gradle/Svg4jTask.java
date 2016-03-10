@@ -41,8 +41,7 @@ public class Svg4jTask extends DefaultTask {
 
 		Iterable<Path> input = PathUtils.filterPathsIn(inputDir.toPath(), PathUtils::hasSvgExtension);
 
-		Svg4j svg4j = Svg4j.createStacker()
-			.viewBox(viewBox)
+		Svg4j svg4j = Svg4j.createStacker(viewBox)
 			.createSvgStart()
 			.hideEmbeddedSvgs()
 			.read(input)
