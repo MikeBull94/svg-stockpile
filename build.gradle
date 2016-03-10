@@ -43,9 +43,10 @@ allprojects {
     dependencyManagement {
         return dependencies {
             dependency group: 'com.google.guava', name: 'guava', version: '19.0'
+            dependency group: 'com.grahamedgecombe.apiviz', name: 'apiviz', version: '1.3.3'
             dependency group: 'junit', name: 'junit', version: '4.12'
-            dependency group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
             dependency group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.6'
+            dependency group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
             dependencySet(group: 'org.slf4j', version: '1.7.18') {
                 entry 'slf4j-api'
                 entry 'slf4j-jdk14'
@@ -59,57 +60,57 @@ configurations {
 }
 
 dependencies {
-    doclet group: 'com.grahamedgecombe.apiviz', name: 'apiviz', version: '1.3.3'
+    doclet group: 'com.grahamedgecombe.apiviz', name: 'apiviz'
 }
 
 gradle.projectsEvaluated {
-    def javaSubprojects = subprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }
-
-    if (javaSubprojects.isEmpty()) {
-        return
+    def javaProjects = allprojects.findAll { project ->
+        project.plugins.hasPlugin(JavaPlugin)
     }
 
-    tasks.create(name: 'aggregateJavadoc', type: Javadoc) {
-        group = JavaBasePlugin.DOCUMENTATION_GROUP
-        description = 'Generates aggregated Javadoc API documentation for the main source code of all Java subprojects.'
+    if (!javaProjects.isEmpty()) {
+        tasks.create(name: 'aggregateJavadoc', type: Javadoc) {
+            group = JavaBasePlugin.DOCUMENTATION_GROUP
+            description = 'Generates aggregated Javadoc API documentation for the main source code of all Java projects.'
 
-        doFirst {
-            javaSubprojects.each { project ->
-                project.sourceSets.main.output.each { dir ->
-                    dir.mkdirs()
+            doFirst {
+                javaProjects.each { project ->
+                    project.sourceSets.main.output.each { dir ->
+                        dir.mkdirs()
+                    }
                 }
+            }
+
+            title = rootProject.name
+            destinationDir = file("$buildDir/docs/javadoc")
+
+            source = javaProjects.javadoc.source
+            classpath = files(javaProjects.javadoc.classpath)
+
+            options {
+                doclet = 'org.jboss.apiviz.APIviz'
+                docletpath = configurations.doclet.files.asType(List)
+
+                addBooleanOption('nopackagediagram', true)
+                addStringOption('sourceclasspath', files(javaProjects.sourceSets.main.output).asPath)
+
+                showAll()
+                links 'https://docs.oracle.com/javase/8/docs/api/'
+                links 'https://docs.gradle.org/current/javadoc/'
+                links 'http://www.slf4j.org/api/'
+
+                def versions = dependencyManagement.managedVersions;
+                links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
+
+                group 'API', 'com.mikebull94.svg4j*'
+                group 'Gradle Plugin', 'com.mikebull94.svg4j.gradle*'
+                group 'Utilities', 'com.mikebull94.svg4j.util*'
             }
         }
 
-        title = rootProject.name
-        destinationDir = file("$buildDir/docs/javadoc")
-
-        source = javaSubprojects.javadoc.source
-        classpath = files(javaSubprojects.javadoc.classpath)
-
-        options {
-            doclet = 'org.jboss.apiviz.APIviz'
-            docletpath = configurations.doclet.files.asType(List)
-
-            addBooleanOption('nopackagediagram', true)
-            addStringOption('sourceclasspath', files(javaSubprojects.sourceSets.main.output).asPath)
-
-            showAll()
-            links 'https://docs.oracle.com/javase/8/docs/api/'
-            links 'https://docs.gradle.org/current/javadoc/'
-            links 'http://www.slf4j.org/api/'
-
-            def versions = dependencyManagement.managedVersions;
-            links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
-
-            group 'API', 'com.mikebull94.svg4j*'
-            group 'Gradle Plugin', 'com.mikebull94.svg4j.gradle*'
-            group 'Utility Library', 'com.mikebull94.svg4j.util*'
+        tasks.create(name: 'javadocJar', type: Jar, dependsOn: aggregateJavadoc) {
+            classifier 'javadoc'
+            from aggregateJavadoc.destinationDir
         }
-    }
-
-    tasks.create(name: 'javadocJar', type: Jar, dependsOn: aggregateJavadoc) {
-        classifier 'javadoc'
-        from aggregateJavadoc.destinationDir
     }
 }
