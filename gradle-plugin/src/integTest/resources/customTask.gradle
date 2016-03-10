@@ -1,0 +1,32 @@
+/**
+ * Test build file that creates a custom Svg4jTask.
+ */
+
+import com.mikebull94.svg4j.gradle.Svg4jTask;
+import com.mikebull94.svg4j.svg.SvgViewBox;
+
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath group: 'com.mikebull94', name: 'svg4j', version: '@version@'
+    }
+}
+
+apply plugin: 'com.mikebull94.svg4j'
+
+task stackSvgs(type: Svg4jTask) {
+    doFirst {
+        println 'Starting SVG stacking...'
+    }
+
+    inputDir = projectDir
+    output = file('output.svg')
+    viewBox = new SvgViewBox(0, 0, 500, 400)
+
+    doLast {
+        println "Finished stacking SVGs."
+    }
+}

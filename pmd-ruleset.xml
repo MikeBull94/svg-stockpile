@@ -18,6 +18,13 @@
     <!-- Contains rules that find problems related to code size or complexity. -->
     <rule ref="rulesets/java/codesize.xml" />
 
+    <!-- Allow a maximum of 20 methods per class. -->
+    <rule ref="rulesets/java/codesize.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="20" />
+        </properties>
+    </rule>
+
     <!-- Contains rules that find problems related to code size or complexity. -->
     <rule ref="rulesets/java/controversial.xml">
         <exclude name="OnlyOneReturn" />
@@ -88,12 +95,13 @@
     <rule ref="rulesets/java/naming.xml">
         <exclude name="ShortVariable" />
         <exclude name="VariableNamingConventions" />
+        <exclude name="AvoidFieldNameMatchingMethodName" />
     </rule>
 
-    <!-- Set the maximum length of a variable name to 20 characters. -->
+    <!-- Set the maximum length of a variable name to 30 characters. -->
     <rule ref="rulesets/java/naming.xml/LongVariable">
         <properties>
-            <property name="minimum" value="20" />
+            <property name="minimum" value="30" />
         </properties>
     </rule>
 

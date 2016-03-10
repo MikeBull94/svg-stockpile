@@ -1,0 +1,73 @@
+/**
+ * Configures a Java integration test source-set and adds an integTest task to the check lifecycle.
+ */
+
+apply plugin: 'java'
+
+sourceSets {
+    integTest {
+        java.srcDir 'src/integTest/java'
+        resources.srcDir 'src/integTest/resources'
+    }
+}
+
+dependencies {
+    /* provide integration tests with the output of the main/test sourceSet as compile-time dependencies */
+    integTestCompile sourceSets.main.output
+    integTestCompile sourceSets.test.output
+
+    /* provide integration tests with the same compile-time dependencies as the main & test sourceSets */
+    integTestCompile configurations.compile
+    integTestCompile configurations.testCompile
+
+    /* provide integration tests with the same run-time dependencies as the main & test sourceSets */
+    integTestRuntime configurations.runtime
+    integTestRuntime configurations.testRuntime
+}
+
+task integTest(type: Test) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = 'Run the integration tests.'
+
+    maxHeapSize = '1024m'
+
+    testClassesDir = sourceSets.integTest.output.classesDir
+    classpath = sourceSets.integTest.runtimeClasspath
+
+    binResultsDir = file("$buildDir/integration-test-results/binary/integTest")
+
+    reports {
+        html.destination = "$buildDir/reports/integration-test"
+        junitXml.destination = "$buildDir/integration-test-results"
+    }
+
+    mustRunAfter test
+}
+
+/* add the integTest to the check lifecycle */
+check.dependsOn integTest
+
+/* ensure the integTest task runs after all tasks named 'test', all Pmd tasks and all FindBugs tasks */
+gradle.projectsEvaluated {
+    allprojects.each { project ->
+        def testTasks = project.tasks.findAll { it.name == 'test' }
+        def findBugsTasks = project.tasks.withType(FindBugs);
+        def pmdTasks = project.tasks.withType(Pmd);
+
+        (testTasks + findBugsTasks + pmdTasks).each { task ->
+            project.tasks.integTest.mustRunAfter task
+        }
+    }
+}
+
+/* register integration-test source directories in projects that have the IntelliJ IDEA plugin applied */
+if (plugins.hasPlugin('idea')) {
+    idea {
+        module {
+            testSourceDirs += sourceSets.integTest.java.srcDirs
+            testSourceDirs += sourceSets.integTest.resources.srcDirs
+
+            scopes.TEST.plus += [ configurations.integTestCompile ]
+        }
+    }
+}

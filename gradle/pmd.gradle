@@ -1,0 +1,16 @@
+/**
+ * Applies the PMD plugin with a custom ruleset and HTML reports enabled.
+ */
+
+apply plugin: 'pmd'
+
+tasks.withType(Pmd) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    ruleSetFiles = rootProject.files('pmd-ruleset.xml')
+    ruleSets = [ ]
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}

@@ -1,9 +1,9 @@
-package com.mikebull94.svg4j.xml.svg.processor;
+package com.mikebull94.svg4j.svg.processor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.mikebull94.svg4j.svg.SvgDocument;
 import com.mikebull94.svg4j.xml.XmlEventProcessor;
-import com.mikebull94.svg4j.xml.svg.SvgDocument;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -14,11 +14,11 @@ import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.mikebull94.svg4j.xml.svg.SvgDocument.EMBEDDED_SVG_TAG;
+import static com.mikebull94.svg4j.svg.SvgDocument.EMBEDDED_SVG_TAG;
 import static java.util.Collections.emptyIterator;
 
 /**
- * An {@link XmlEventProcessor} that accepts {@link StartElement}s/{@link EndElement}s whose {@link QName} equals
+ * An {@link XmlEventProcessor} that accepts {@link StartElement}s and {@link EndElement}s whose {@link QName} equals
  * {@link SvgDocument#SVG_TAG}.
  * <p>
  * If the {@link XMLEvent} is a {@link StartElement} then the processing returns an {@link ImmutableList} containing a

@@ -1,0 +1,14 @@
+/**
+ * Applies the FindBugs(tm) plugin with HTML reporting enabled.
+ */
+
+apply plugin: 'findbugs'
+
+project.tasks.withType(FindBugs) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}

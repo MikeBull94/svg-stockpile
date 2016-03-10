@@ -1,6 +1,6 @@
 package com.mikebull94.svg4j.xml.svg.processor;
 
-import com.mikebull94.svg4j.xml.svg.SvgDocument;
+import com.mikebull94.svg4j.svg.SvgDocument;
 import org.mockito.Mockito;
 
 import javax.xml.namespace.QName;
@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static com.mikebull94.svg4j.xml.svg.SvgDocument.EMBEDDED_SVG_TAG;
+import static com.mikebull94.svg4j.svg.SvgDocument.EMBEDDED_SVG_TAG;
 import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.eventIsOfType;
 import static com.mikebull94.svg4j.xml.svg.processor.XmlEventBehaviour.resultContains;
 import static java.util.Collections.emptyIterator;

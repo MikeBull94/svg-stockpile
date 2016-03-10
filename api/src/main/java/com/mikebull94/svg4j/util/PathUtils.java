@@ -1,9 +1,10 @@
 package com.mikebull94.svg4j.util;
 
 import com.google.common.collect.ImmutableList;
-import com.mikebull94.svg4j.xml.svg.SvgDocument;
+import com.mikebull94.svg4j.svg.SvgDocument;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.function.Predicate;
 
 import static com.google.common.io.Files.getFileExtension;
+import static java.nio.file.Files.readAllBytes;
 
 /**
  * Contains {@link Path} related utility methods.
@@ -78,6 +80,17 @@ public final class PathUtils {
 		});
 
 		return filtered.build();
+	}
+
+	/**
+	 * Represents the contents of a file located at a {@link Path} as a {@link StandardCharsets#UTF_8 UTF-8}
+	 * {@link String}.
+	 * @param path The {@link Path} to the file.
+	 * @return The contents as a {@link StandardCharsets#UTF_8 UTF-8} {@link String}.
+	 * @throws IOException If an I/O error occurs.
+	 */
+	public static String contents(Path path) throws IOException {
+		return new String(readAllBytes(path), StandardCharsets.UTF_8);
 	}
 
 	private PathUtils() {

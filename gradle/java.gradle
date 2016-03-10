@@ -2,10 +2,7 @@
  * Configures a Java build environment with common dependencies when applied to any project.
  */
 
-apply plugin: 'jacoco'
 apply plugin: 'java'
-apply plugin: 'findbugs'
-apply plugin: 'pmd'
 apply plugin: 'idea'
 
 sourceCompatibility = '1.8'
@@ -23,35 +20,5 @@ idea {
     module {
         downloadJavadoc = true
         downloadSources = true
-    }
-}
-
-check.dependsOn jacocoTestReport
-
-tasks.withType(JacocoReport) {
-    group = 'Reporting'
-    description = 'Generate code coverage reports.'
-    reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "$reportsDir/coverage"
-    }
-}
-
-tasks.withType(FindBugs) {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
-tasks.withType(Pmd) {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    ruleSetFiles = rootProject.files('pmd-ruleset.xml')
-    ruleSets = [ ]
-    reports {
-        xml.enabled = false
-        html.enabled = true
     }
 }

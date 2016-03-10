@@ -1,3 +1,6 @@
 apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "$rootDir/gradle/findbugs.gradle"
+apply from: "$rootDir/gradle/pmd.gradle"
 
 description = 'API for interacting with svg4j.'

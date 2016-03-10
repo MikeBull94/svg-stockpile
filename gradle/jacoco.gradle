@@ -1,0 +1,18 @@
+/**
+ * Applies the JaCoCo plugin with HTML reports enabled.
+ */
+
+apply plugin: 'jacoco'
+
+check.dependsOn jacocoTestReport
+
+tasks.withType(JacocoReport) {
+    group = 'Reporting'
+    description = 'Generate code coverage reports.'
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "$reportsDir/coverage"
+    }
+}

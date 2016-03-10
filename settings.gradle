@@ -1,3 +1,4 @@
 rootProject.name = 'svg4j'
 
 include 'api'
+include 'gradle-plugin'

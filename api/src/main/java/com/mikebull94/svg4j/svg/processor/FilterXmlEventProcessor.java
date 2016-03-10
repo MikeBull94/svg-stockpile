@@ -1,4 +1,4 @@
-package com.mikebull94.svg4j.xml.svg.processor;
+package com.mikebull94.svg4j.svg.processor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;

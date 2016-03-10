@@ -1,0 +1,69 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+apply from: "$rootDir/gradle/java.gradle"
+apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "$rootDir/gradle/integTest.gradle"
+apply from: "$rootDir/gradle/findbugs.gradle"
+apply from: "$rootDir/gradle/pmd.gradle"
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven-publish'
+
+description = 'Gradle plugin that interacts with the svg4j API.'
+
+/*
+ * To run integration tests in IDEA:
+ * https://discuss.gradle.org/t/nosuchmethoderror-in-testkit-after-2-9-2-10-transition/13505/10
+ */
+
+dependencies {
+    compile gradleApi()
+    compile project(':api')
+    integTestCompile gradleTestKit()
+    integTestCompile 'org.codehaus.groovy:groovy-all:2.4.6'
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'com.mikebull94.svg4j.Svg4j'
+    }
+
+    baseName = rootProject.name
+    classifier = '' // TODO: is there a better way for removing the classifier on the fat jar?
+}
+
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) {
+            groupId rootProject.group
+            artifactId rootProject.name
+            version rootProject.version
+
+            artifact rootProject.javadocJar
+            artifact shadowJar
+            artifact sourcesJar
+        }
+    }
+}
+
+uploadArchives {
+    return repositories {
+        mavenLocal()
+    }
+}
+
+processIntegTestResources {
+    filter(ReplaceTokens, tokens: [
+            'version': rootProject.version
+    ])
+}
+
+integTest.dependsOn publishToMavenLocal

@@ -1,36 +1,58 @@
 package com.mikebull94.svg4j;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.mikebull94.svg4j.svg.SvgViewBox;
+import com.mikebull94.svg4j.svg.processor.EndElementProcessor;
+import com.mikebull94.svg4j.svg.processor.FilterXmlEventProcessor;
+import com.mikebull94.svg4j.svg.processor.StartElementProcessor;
+import com.mikebull94.svg4j.svg.processor.SvgTagProcessor;
 import com.mikebull94.svg4j.util.PathUtils;
 import com.mikebull94.svg4j.xml.XmlDocument;
-import com.mikebull94.svg4j.xml.XmlDocumentFactory;
 import com.mikebull94.svg4j.xml.XmlEventProcessor;
-import com.mikebull94.svg4j.xml.svg.SvgDocument;
-import com.mikebull94.svg4j.xml.svg.SvgViewBox;
-import com.mikebull94.svg4j.xml.svg.processor.EndElementProcessor;
-import com.mikebull94.svg4j.xml.svg.processor.FilterXmlEventProcessor;
-import com.mikebull94.svg4j.xml.svg.processor.StartElementProcessor;
-import com.mikebull94.svg4j.xml.svg.processor.SvgTagProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.util.XMLEventConsumer;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import static com.google.common.io.Files.getNameWithoutExtension;
+import static com.mikebull94.svg4j.svg.SvgDocument.EMBEDDED_NAMESPACE;
+import static com.mikebull94.svg4j.svg.SvgDocument.NAMESPACE_URI;
+import static com.mikebull94.svg4j.svg.SvgDocument.STYLE_TAG;
+import static com.mikebull94.svg4j.svg.SvgDocument.SVG_TAG;
+import static com.mikebull94.svg4j.xml.XmlDocument.NAMESPACE;
+import static java.util.Collections.emptyIterator;
 
 /**
- * Defines an {@link XmlDocumentFactory} which will produce optimized and stacked SVG {@link XmlDocument}s via a set of
- * {@link XmlEventProcessor}s that deal with the {@link XMLEvent}s found in an SVG document; optimizing, filtering, and
- * finally stacking where appropriate.
+ * Allows for usage of a predefined {@link Set} of {@link XmlEventProcessor}s designed to stack and optimize an SVG
+ * document, or a user-supplied {@link Set} of {@link XmlEventProcessor}s, that will be applied to SVG documents
+ * passed into {@link #read(String, InputStream)}. Once {@link XMLEvent}s have finished reading the user may then write
+ * them to the file system (using {@link #write(File)} or {@link #write(Path)}) or any {@link OutputStream} using
+ * {@link #write(OutputStream)}.
  */
 public final class Svg4j {
 
@@ -40,83 +62,183 @@ public final class Svg4j {
 	private static final Logger logger = LoggerFactory.getLogger(Svg4j.class);
 
 	/**
+	 * Used to create {@link XMLEventWriter}s.
+	 */
+	private static final XMLOutputFactory output = XMLOutputFactory.newFactory();
+
+	/**
+	 * Used to create {@link XMLEventReader}s.
+	 */
+	private static final XMLInputFactory input = XMLInputFactory.newFactory();
+
+	/**
+	 * Used to create SVG {@link StartElement}s and {@link EndElement}s.
+	 */
+	private static final XMLEventFactory events = XMLEventFactory.newFactory();
+
+	/**
+	 * The expected program arguments format.
+	 */
+	private static final String EXPECTED_ARGUMENTS =
+		"Expecting program arguments: <inputDir> <output> <viewBoxMinX> <viewBoxMinY> <viewBoxWidth> <viewBoxHeight>";
+
+	/**
+	 * The message to display when the viewBox is not set before processing {@link XMLEvent}s.
+	 */
+	private static final String VIEWBOX_REQUIRED = "viewBox must be set before processing XML events.";
+
+	/**
 	 * The entry point of the program.
 	 * @param args The program's arguments.
 	 */
 	public static void main(String... args) {
 		try {
 			logger.info("Starting svg4j...");
-			Svg4j svg4j = new Svg4j();
 
-			Path inputDir = Paths.get("api", "src", "main", "resources");
+			Preconditions.checkArgument(args.length == 6, EXPECTED_ARGUMENTS);
+
+			Path inputDir = Paths.get(args[0]);
+			Path output = Paths.get(args[1]);
+			int minX = Integer.parseInt(args[2]);
+			int minY = Integer.parseInt(args[3]);
+			int width = Integer.parseInt(args[4]);
+			int height = Integer.parseInt(args[5]);
+
+			SvgViewBox viewBox = new SvgViewBox(minX, minY, width, height);
+
+			logger.info("Stacking into: {}", viewBox);
+			logger.info("Searching input directory: {}", inputDir);
+			logger.info("Stacking to file: {}", output);
+
 			ImmutableList<Path> input = PathUtils.filterPathsIn(inputDir, PathUtils::hasSvgExtension);
 
-			SvgViewBox viewBox = new SvgViewBox(0, 0, 500, 500);
-			XmlDocument stacked = svg4j.stack(viewBox, input);
+			Svg4j stacker = Svg4j.createStacker()
+				.viewBox(viewBox)
+				.createSvgStart()
+				.hideEmbeddedSvgs()
+				.read(input)
+				.svgEnd()
+				.write(output);
 
-			Path output = stacked.write(Paths.get("api", "build", "resources", "main", "output.svg"));
-			logger.info("svg4j complete: {}", output);
+			logger.info("Stacked {} XML events.", stacker.size());
 		} catch (Throwable t) {
 			logger.error("Failed to run svg4j.", t);
 		}
 	}
 
 	/**
-	 * The {@link XmlDocumentFactory} used to create optimized and stacked SVG {@link XmlDocument}s.
+	 * Creates an {@link Svg4j} with a {@link Set} of {@link XmlEventProcessor}s configured to stack and optimize SVG
+	 * documents.
+	 * @return The {@link Svg4j}.
 	 */
-	private final XmlDocumentFactory factory = new XmlDocumentFactory(
-		new FilterXmlEventProcessor(),
-		new SvgTagProcessor(),
-		new StartElementProcessor(),
-		new EndElementProcessor()
-	);
-
-	/**
-	 * Stacks {@link XMLEvent}s read from an array of {@link Path}s into an optimized SVG {@link XmlDocument}.
-	 * @param viewBox The stacked SVG's view-box.
-	 * @param paths The {@link Path}s to stack.
-	 * @return The stacked and optimized SVG {@link XmlDocument}.
-	 * @throws IOException If an I/O error occurs.
-	 * @throws XMLStreamException If an XML error occurs.
-	 */
-	public XmlDocument stack(SvgViewBox viewBox, Path... paths) throws IOException, XMLStreamException {
-		return stack(viewBox, Arrays.asList(paths));
+	public static Svg4j createStacker() {
+		return create(
+			new FilterXmlEventProcessor(),
+			new SvgTagProcessor(),
+			new StartElementProcessor(),
+			new EndElementProcessor()
+		);
 	}
 
 	/**
-	 * Stacks {@link XMLEvent}s read from an {@link Iterable} of {@link Path}s into an optimized SVG {@link XmlDocument}.
-	 * @param viewBox The stacked SVG's view-box.
-	 * @param paths The {@link Path}s to stack.
-	 * @return The stacked and optimized SVG {@link XmlDocument}.
-	 * @throws IOException If an I/O error occurs.
-	 * @throws XMLStreamException If an XML error occurs.
+	 * Creates an {@link Svg4j} with a {@link Set} of registered {@link XmlEventProcessor}s.
+	 * @param processors The {@link XmlEventProcessor}s to register.
+	 * @return The {@link Svg4j}.
 	 */
-	public XmlDocument stack(SvgViewBox viewBox, Iterable<Path> paths) throws IOException, XMLStreamException {
-		Preconditions.checkNotNull(viewBox);
-		Preconditions.checkNotNull(paths);
-
-		ImmutableList.Builder<XMLEvent> builder = ImmutableList.builder();
-
-		builder.add(SvgDocument.svgStart(viewBox));
-		builder.addAll(SvgDocument.hideEmbeddedSvgsStyle());
-
-		for (Path path : paths) {
-			builder.addAll(stack(path).getEvents());
-		}
-
-		builder.add(SvgDocument.svgEnd());
-
-		return new XmlDocument(builder.build());
+	public static Svg4j create(XmlEventProcessor... processors) {
+		return create(ImmutableSet.copyOf(processors));
 	}
 
 	/**
-	 * Stacks {@link XMLEvent}s read from a {@link Path} into an optimized SVG {@link XmlDocument}.
-	 * @param path The {@link Path} to stack.
-	 * @return The stacked and optimized SVG {@link XmlDocument}.
+	 * Creates an {@link Svg4j} with a {@link Set} of registered {@link XmlEventProcessor}s.
+	 * @param processors The {@link XmlEventProcessor}s to register.
+	 * @return The {@link Svg4j}.
+	 */
+	public static Svg4j create(ImmutableSet<XmlEventProcessor> processors) {
+		return new Svg4j(processors);
+	}
+
+	/**
+	 * The {@link XMLEvent}s read and processed from input.
+	 */
+	private final List<XMLEvent> readEvents = new ArrayList<>();
+
+	/**
+	 * The {@link XmlEventProcessor}s used to process incoming {@link XMLEvent}s.
+	 */
+	private final ImmutableSet<XmlEventProcessor> processors;
+
+	/**
+	 * The {@link SvgViewBox}.
+	 */
+	private SvgViewBox viewBox;
+
+	/**
+	 * Creates an {@link Svg4j} with a {@link Set} of registered {@link XmlEventProcessor}s.
+	 * @param processors The {@link XmlEventProcessor}s to register.
+	 */
+	private Svg4j(ImmutableSet<XmlEventProcessor> processors) {
+		this.processors = Preconditions.checkNotNull(processors);
+	}
+
+	/**
+	 * Creates and processes a {@link StartElement} with the {@code <svg>} tag.
+	 * @return The {@link Svg4j} instance for chaining.
+	 */
+	public Svg4j createSvgStart() {
+		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
+		Collection<Attribute> attributes = new ArrayList<>();
+		attributes.add(events.createAttribute(NAMESPACE, NAMESPACE_URI));
+		attributes.add(events.createAttribute(EMBEDDED_NAMESPACE, NAMESPACE_URI));
+		attributes.addAll(viewBox.attributes());
+
+		StartElement svgStart = events.createStartElement(SVG_TAG, attributes.iterator(), emptyIterator());
+		readEvents.add(svgStart);
+		return this;
+	}
+
+	/**
+	 * Creates and processes the {@link XMLEvent}s related to hiding embedded SVGs.
+	 * @return The {@link Svg4j} instance for chaining.
+	 */
+	public Svg4j hideEmbeddedSvgs() {
+		readEvents.add(events.createStartElement(STYLE_TAG, emptyIterator(), emptyIterator()));
+		readEvents.add(events.createCharacters(".i {display:none;}.i:target {display:block;}"));
+		readEvents.add(events.createEndElement(STYLE_TAG, emptyIterator()));
+		return this;
+	}
+
+	/**
+	 * Creates and process an {@link EndElement} with the {@code <svg>} tag.
+	 * @return The {@link Svg4j} instance for chaining.
+	 */
+	public Svg4j svgEnd() {
+		readEvents.add(events.createEndElement(SVG_TAG, emptyIterator()));
+		return this;
+	}
+
+	/**
+	 * Sets the {@link SvgViewBox}.
+	 * @param viewBox The {@link SvgViewBox} to set.
+	 * @return The {@link Svg4j} instance for chaining.
+	 */
+	public Svg4j viewBox(SvgViewBox viewBox) {
+		this.viewBox = Preconditions.checkNotNull(viewBox);
+		return this;
+	}
+
+	/**
+	 * Reads {@link XMLEvent}s from a file located at a {@link Path}.
+	 * @param path The {@link Path} from which to read the file.
+	 * @return The {@link Svg4j} instance for chaining.
 	 * @throws IOException If an I/O error occurs.
 	 * @throws XMLStreamException If an XML error occurs.
+	 * @throws NullPointerException If the {@link SvgViewBox} or {@link Path} are null.
 	 */
-	public XmlDocument stack(Path path) throws IOException, XMLStreamException {
+	public Svg4j read(Path path) throws IOException, XMLStreamException {
+		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
+		Preconditions.checkNotNull(path);
+
 		logger.info("Stacking: {}", path);
 
 		Path fileName = path.getFileName();
@@ -128,26 +250,131 @@ public final class Svg4j {
 		String id = getNameWithoutExtension(fileName.toString());
 
 		try (InputStream inputStream = Files.newInputStream(path)) {
-			return stack(id, inputStream);
+			return read(id, inputStream);
 		}
 	}
 
 	/**
-	 * Stacks {@link XMLEvent}s read from an {@link InputStream} into an optimized SVG {@link XmlDocument}.
-	 * @param inputStream The {@link InputStream} to read {@link XMLEvent}s from.
-	 * @return The stacked and optimized SVG {@link XmlDocument}.
+	 * Reads {@link XMLEvent}s from files located by an array of {@link Path}s.
+	 * @param paths The {@link Path}s from which to read the files.
+	 * @return The {@link Svg4j} instance for chaining.
+	 * @throws IOException If an I/O error occurs.
 	 * @throws XMLStreamException If an XML error occurs.
+	 * @throws NullPointerException If the {@link SvgViewBox} is null.
 	 */
-	public XmlDocument stack(String id, InputStream inputStream) throws XMLStreamException {
-		XmlDocument document = factory.create(id, inputStream);
-		logger.info("Stacked {} XML events into #{}", document.getEvents().size(), id);
-		return document;
+	public Svg4j read(Path... paths) throws IOException, XMLStreamException {
+		return read(Arrays.asList(paths));
 	}
 
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-			.add("factory", factory)
-			.toString();
+	/**
+	 * Reads {@link XMLEvent}s from files located by an {@link Iterable} of {@link Path}s.
+	 * @param paths The {@link Path}s from which to read the files.
+	 * @return The {@link Svg4j} instance for chaining.
+	 * @throws IOException If an I/O error occurs.
+	 * @throws XMLStreamException If an XML error occurs.
+	 * @throws NullPointerException If the {@link SvgViewBox} or {@link Path}s are null.
+	 */
+	public Svg4j read(Iterable<Path> paths) throws IOException, XMLStreamException {
+		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
+
+		for (Path path : paths) {
+			read(path);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Reads {@link XMLEvent}s from an {@link InputStream}.
+	 * @param id The fragment identifier of this embedded SVG.
+	 * @param inputStream The {@link InputStream} to read {@link XMLEvent}s from.
+	 * @return The {@link Svg4j} instance for chaining.
+	 * @throws XMLStreamException If an XML error occurs.
+	 * @throws NullPointerException If the {@link SvgViewBox} or {@code id} are null.
+	 */
+	public Svg4j read(String id, InputStream inputStream) throws XMLStreamException {
+		Preconditions.checkNotNull(viewBox, VIEWBOX_REQUIRED);
+		Preconditions.checkNotNull(id);
+
+		XMLEventReader reader = input.createXMLEventReader(inputStream);
+
+		try {
+			while (reader.hasNext()) {
+				XMLEvent event = reader.nextEvent();
+
+				processors.stream()
+					.parallel()
+					.filter(processor -> processor.accepts(event))
+					.forEach(processor -> readEvents.addAll(processor.process(id, event)));
+			}
+		} finally {
+			reader.close();
+		}
+
+		return this;
+	}
+
+	/**
+	 * Writes the {@link XMLEvent}s in this {@link XmlDocument} to a {@link File}.
+	 * @param file The {@link File} to write to.
+	 * @return The {@link Svg4j} instance for chaining.
+	 * @throws IOException If an I/O error occurs.
+	 * @throws FileNotFoundException If the file exists but is a directory rather than a regular file, does not exist
+	 * but cannot be created, or cannot be opened for any other reason.
+	 * @throws XMLStreamException If an XML error occurs.
+	 */
+	public Svg4j write(File file) throws IOException, XMLStreamException {
+		return write(file.toPath());
+	}
+
+	/**
+	 * Writes the {@link XMLEvent}s in this {@link XmlDocument} to a {@link File}.
+	 * @param path The {@link Path} at which to write the {@link File}.
+	 * @return The {@link Svg4j} instance for chaining.
+	 * @throws IOException If an I/O error occurs.
+	 * @throws FileNotFoundException If the file exists but is a directory rather than a regular file, does not exist
+	 * but cannot be created, or cannot be opened for any other reason.
+	 * @throws XMLStreamException If an XML error occurs.
+	 */
+	public Svg4j write(Path path) throws IOException, XMLStreamException {
+		try (OutputStream outputStream = Files.newOutputStream(path)) {
+			return write(outputStream);
+		}
+	}
+
+	/**
+	 * Writes the {@link XMLEvent}s in this {@link XmlDocument} to an {@link OutputStream}.
+	 * @param outputStream The {@link OutputStream} to write the {@link XMLEvent}s to.
+	 * @return The {@link Svg4j} instance for chaining.
+	 * @throws XMLStreamException If an XML error occurs.
+	 */
+	public Svg4j write(OutputStream outputStream) throws XMLStreamException {
+		XMLEventWriter writer = output.createXMLEventWriter(outputStream);
+
+		try {
+			addEventsTo(writer);
+		} finally {
+			writer.flush();
+			writer.close();
+		}
+
+		return this;
+	}
+
+	/**
+	 * Adds all of the {@link XMLEvent}s in this {@link XmlDocument} to an {@link XMLEventConsumer}.
+	 * @param consumer The {@link XMLEventConsumer} to add the {@link XMLEvent}s to.
+	 * @return The {@link Svg4j} instance for chaining.
+	 * @throws XMLStreamException If an XML error occurs.
+	 */
+	public Svg4j addEventsTo(XMLEventConsumer consumer) throws XMLStreamException {
+		for (XMLEvent event : readEvents) {
+			consumer.add(event);
+		}
+		return this;
+	}
+
+	public int size() {
+		return readEvents.size();
 	}
 }

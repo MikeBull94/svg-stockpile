@@ -1,5 +1,6 @@
 package com.mikebull94.svg4j.xml.svg.processor;
 
+import com.mikebull94.svg4j.svg.processor.FilterXmlEventProcessor;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 

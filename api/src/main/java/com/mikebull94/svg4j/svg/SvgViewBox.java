@@ -1,4 +1,4 @@
-package com.mikebull94.svg4j.xml.svg;
+package com.mikebull94.svg4j.svg;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
