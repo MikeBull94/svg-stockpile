@@ -56,7 +56,7 @@ System.out.println(stacker.size());
 
 ### Gradle Plugin
 
-The API can also be accessed via via a [Gradle Plugin][gradle-plugin]:
+The API can also be accessed via a [Gradle Plugin][gradle-plugin]:
 
 ```groovy
 apply plugin: 'com.mikebull94.svg4j'
