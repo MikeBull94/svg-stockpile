@@ -1,7 +1,7 @@
 # svg4j
 
-Svg4j is an optimizing and stacking tool for [Scalable Vector Graphics][svg],
-written in [Java][java].
+An optimizing and stacking tool for [Scalable Vector Graphics][svg], written in
+[Java][java].
 
 With SVGs being [heavily supported][caniuse-svg] on the web many may wish to
 compress and package all of their SVG assets into a single optimized file. This
