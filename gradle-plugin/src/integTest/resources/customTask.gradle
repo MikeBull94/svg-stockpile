@@ -1,9 +1,9 @@
 /**
- * Test build file that creates a custom Svg4jTask.
+ * Test build file that creates a custom StockpileTask.
  */
 
-import com.mikebull94.svg4j.gradle.Svg4jTask;
-import com.mikebull94.svg4j.svg.SvgViewBox;
+import com.mikebull94.stockpile.gradle.StockpileTask;
+import com.mikebull94.stockpile.svg.SvgViewBox;
 
 buildscript {
     repositories {
@@ -11,22 +11,22 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'com.mikebull94', name: 'svg4j', version: '@version@'
+        classpath group: 'com.mikebull94', name: 'svg-stockpile', version: '@version@'
     }
 }
 
-apply plugin: 'com.mikebull94.svg4j'
+apply plugin: 'com.mikebull94.svg-stockpile'
 
-task stackSvgs(type: Svg4jTask) {
+task stockpileSvgs(type: StockpileTask) {
     doFirst {
-        println 'Starting SVG stacking...'
+        println 'Starting SVG stockpile...'
     }
 
     inputDir = projectDir
     output = file('output.svg')
-    viewBox = new SvgViewBox(0, 0, 500, 400)
+    viewBox = new SvgViewBox(0, 0, 500, 500)
 
     doLast {
-        println "Finished stacking SVGs."
+        println "Finished stockpiling SVGs."
     }
 }

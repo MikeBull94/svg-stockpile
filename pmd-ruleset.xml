@@ -16,13 +16,8 @@
     <rule ref="rulesets/java/clone.xml" />
 
     <!-- Contains rules that find problems related to code size or complexity. -->
-    <rule ref="rulesets/java/codesize.xml" />
-
-    <!-- Allow a maximum of 20 methods per class. -->
-    <rule ref="rulesets/java/codesize.xml/TooManyMethods">
-        <properties>
-            <property name="maxmethods" value="20" />
-        </properties>
+    <rule ref="rulesets/java/codesize.xml">
+        <exclude name="TooManyMethods" />
     </rule>
 
     <!-- Contains rules that find problems related to code size or complexity. -->

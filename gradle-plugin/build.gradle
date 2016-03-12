@@ -12,12 +12,7 @@ apply from: "$rootDir/gradle/pmd.gradle"
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'maven-publish'
 
-description = 'Gradle plugin that interacts with the svg4j API.'
-
-/*
- * To run integration tests in IDEA:
- * https://discuss.gradle.org/t/nosuchmethoderror-in-testkit-after-2-9-2-10-transition/13505/10
- */
+description = 'Gradle plugin that interacts with the svg-stockpile API.'
 
 dependencies {
     compile gradleApi()
@@ -28,7 +23,7 @@ dependencies {
 
 shadowJar {
     manifest {
-        attributes 'Main-Class': 'com.mikebull94.svg4j.Svg4j'
+        attributes 'Main-Class': 'com.mikebull94.stockpile.Example'
     }
 
     baseName = rootProject.name

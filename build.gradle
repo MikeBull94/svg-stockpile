@@ -102,9 +102,9 @@ gradle.projectsEvaluated {
                 def versions = dependencyManagement.managedVersions;
                 links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
 
-                group 'API', 'com.mikebull94.svg4j*'
-                group 'Gradle Plugin', 'com.mikebull94.svg4j.gradle*'
-                group 'Utilities', 'com.mikebull94.svg4j.util*'
+                group 'API', 'com.mikebull94.stockpile*'
+                group 'Gradle Plugin', 'com.mikebull94.stockpile.gradle*'
+                group 'Utilities', 'com.mikebull94.stockpile.util*'
             }
         }
 

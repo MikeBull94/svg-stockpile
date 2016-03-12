@@ -1,4 +1,4 @@
-rootProject.name = 'svg4j'
+rootProject.name = 'svg-stockpile'
 
 include 'api'
 include 'gradle-plugin'

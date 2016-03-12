@@ -1,4 +1,4 @@
-# svg4j
+# svg-stockpile
 
 An optimizing and stacking tool for [Scalable Vector Graphics][svg], written in
 [Java][java].
@@ -13,11 +13,9 @@ most modern browsers.
 
 ## Usage
 
-### Direct
-
 The tool can be applied directly on an input directory of SVGs by running the
-[`Svg4j`](api/src/main/java/com/mikebull94/svg4j/Svg4j.java) class with the
-following program arguments:
+[`Example program`](api/src/main/java/com/mikebull94/stockpile/Example.java)
+with the following arguments:
 
 * `inputDir` - The input directory of SVGs (e.g.
   [`api/src/main/resources`](api/src/main/resources))
@@ -29,30 +27,15 @@ following program arguments:
 
 All together this example would create the following program arguments:
 
-`api/src/main/resources api/build/resources/main/output.svg 0 0 500 500`
+<kbd>
+  <kbd>api/src/main/resources</kbd>
+  <kbd>api/build/resources/main/output.svg</kbd>
+  <kbd>0 0 500 500</kbd>
+</kbd>
 
 The [example SVGs](api/src/main/resources) included in the distribution are
 variations of the [Wikimedia Community Logo][wikimedia-community-logo], licensed
 for any purpose within the public domain.
-
-### API
-
-The API can be interacted with directly, as in the following example:
-
-```java
-ImmutableList<Path> input = ImmutableList.of(Paths.get("input_dir"));
-Path output = Paths.get("output.svg");
-SvgViewBox viewBox = new SvgViewBox(0, 0, 500, 500);
-
-Svg4j stacker = Svg4j.createStacker(viewBox)
-	.createSvgStart()
-	.hideEmbeddedSvgs()
-	.read(input)
-	.svgEnd()
-	.write(output);
-
-System.out.println(stacker.size());
-```
 
 ### Gradle Plugin
 
