@@ -52,9 +52,9 @@ public final class Svg4jPluginTest {
 			.given(arguments("stackSvgs"))
 			.given(GradleRunner::forwardOutput)
 			.when(GradleRunner::build)
-			.thenBuildResult(outputContains("Starting SVG stacking..."))
-			.thenBuildResult(outputContains("Finished stacking SVGs."))
-			.thenBuildResult(taskOutcome(":stackSvgs", SUCCESS))
-			.thenTemporaryFolder(correctOutput("output.svg"));
+			.thenBuildResult("Expected start debug output.", outputContains("Starting SVG stacking..."))
+			.thenBuildResult("Expected outcome of :stackSvgs to be " + SUCCESS, taskOutcome(":stackSvgs", SUCCESS))
+			.thenBuildResult("Expected finish debug output", outputContains("Finished stacking SVGs."))
+			.thenTemporaryFolder("Actual SVG does not match expected", correctOutput("output.svg"));
 	}
 }

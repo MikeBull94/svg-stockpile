@@ -55,7 +55,7 @@ publishing {
 }
 
 uploadArchives {
-    return repositories {
+    repositories {
         mavenLocal()
     }
 }

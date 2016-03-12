@@ -43,13 +43,13 @@ final class GradleBuildFileTester {
 		return this;
 	}
 
-	public GradleBuildFileTester thenBuildResult(Predicate<BuildResult> predicate) {
-		assertTrue(predicate.test(result));
+	public GradleBuildFileTester thenBuildResult(String message, Predicate<BuildResult> predicate) {
+		assertTrue(message, predicate.test(result));
 		return this;
 	}
 
-	public GradleBuildFileTester thenTemporaryFolder(Predicate<TemporaryFolder> predicate) {
-		assertTrue(predicate.test(projectDir));
+	public GradleBuildFileTester thenTemporaryFolder(String message, Predicate<TemporaryFolder> predicate) {
+		assertTrue(message, predicate.test(projectDir));
 		return this;
 	}
 }

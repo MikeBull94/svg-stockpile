@@ -107,7 +107,7 @@ public final class Svg4j {
 
 			ImmutableList<Path> input = PathUtils.filterPathsIn(inputDir, PathUtils::hasSvgExtension);
 
-			Svg4j stacker = Svg4j.createStacker(viewBox)
+			Svg4j stacker = createStacker(viewBox)
 				.createSvgStart()
 				.hideEmbeddedSvgs()
 				.read(input)
