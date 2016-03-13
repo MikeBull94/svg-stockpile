@@ -4,9 +4,13 @@
 
 apply plugin: 'pmd'
 
+pmd {
+    toolVersion = '5.4.1' // https://pmd.github.io/pmd-5.4.1/pmd-java/rules/index.html
+}
+
 tasks.withType(Pmd) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    ruleSetFiles = rootProject.files('pmd-ruleset.xml')
+    ruleSetFiles = files("$rootDir/gradle/pmd-ruleset.xml")
     ruleSets = [ ]
 
     reports {
