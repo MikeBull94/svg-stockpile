@@ -2,8 +2,9 @@
  * Test build file that creates a custom StockpileTask.
  */
 
-import com.mikebull94.stockpile.gradle.StockpileTask;
-import com.mikebull94.stockpile.svg.SvgViewBox;
+
+import com.mikebull94.stockpile.gradle.StockpileTask
+import com.mikebull94.stockpile.svg.SvgViewBox
 
 buildscript {
     repositories {
