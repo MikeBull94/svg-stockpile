@@ -54,16 +54,7 @@ public final class Stockpile {
 	 * @param processors The {@link XmlEventProcessor}s to register.
 	 * @return The {@link StockpileBuilder}.
 	 */
-	public static StockpileBuilder builder(ImmutableSet<XmlEventProcessor> processors) {
-		return new StockpileBuilder(processors);
-	}
-
-	/**
-	 * Creates a new {@link StockpileBuilder}.
-	 * @param processors The {@link XmlEventProcessor}s to register.
-	 * @return The {@link StockpileBuilder}.
-	 */
-	public static StockpileBuilder builder(Collection<XmlEventProcessor> processors) {
+	public static StockpileBuilder builder(Collection<? extends XmlEventProcessor> processors) {
 		return new StockpileBuilder(ImmutableSet.copyOf(processors));
 	}
 
@@ -72,7 +63,7 @@ public final class Stockpile {
 	 * @param processors The {@link XmlEventProcessor}s to register.
 	 * @return The {@link StockpileBuilder}.
 	 */
-	public static StockpileBuilder builder(Iterable<XmlEventProcessor> processors) {
+	public static StockpileBuilder builder(Iterable<? extends XmlEventProcessor> processors) {
 		return new StockpileBuilder(ImmutableSet.copyOf(processors));
 	}
 
@@ -81,7 +72,7 @@ public final class Stockpile {
 	 * @param processors The {@link XmlEventProcessor}s to register.
 	 * @return The {@link StockpileBuilder}.
 	 */
-	public static StockpileBuilder builder(Iterator<XmlEventProcessor> processors) {
+	public static StockpileBuilder builder(Iterator<? extends XmlEventProcessor> processors) {
 		return new StockpileBuilder(ImmutableSet.copyOf(processors));
 	}
 

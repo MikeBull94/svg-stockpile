@@ -14,7 +14,7 @@ most modern browsers.
 ## Usage
 
 The tool can be applied directly on an input directory of SVGs by running the
-[`Example program`](api/src/main/java/com/mikebull94/stockpile/Example.java)
+[`Example program`](api/src/main/example/com/mikebull94/stockpile/Example.java)
 with the following arguments:
 
 * `inputDir` - The input directory of SVGs (e.g.
