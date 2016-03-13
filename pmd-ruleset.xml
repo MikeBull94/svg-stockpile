@@ -5,6 +5,7 @@
          xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
     <!-- Rule descriptions found at: https://pmd.github.io/pmd-5.4.0/pmd-java/rules/index.html -->
+    <description>PMD scans Java source code and looks for potential problems/</description>
 
     <!-- Contains a collection of good practices which should be followed. -->
     <rule ref="rulesets/java/basic.xml" />
