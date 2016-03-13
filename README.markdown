@@ -42,9 +42,9 @@ for any purpose within the public domain.
 The API can also be accessed via a [Gradle Plugin][gradle-plugin]:
 
 ```groovy
-apply plugin: 'com.mikebull94.svg4j'
+apply plugin: 'com.mikebull94.svg-stockpile'
 
-task stackSvgs(type: Svg4jTask) {
+task stockpile(type: StockpileTask) {
     inputDir = projectDir
     output = file('output.svg')
     viewBox = new SvgViewBox(0, 0, 500, 400)
