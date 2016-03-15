@@ -47,7 +47,7 @@ task integTest(type: Test) {
 /* add the integTest to the check lifecycle */
 check.dependsOn integTest
 
-/* ensure the integTest task runs after all tasks named 'test', all Pmd tasks and all FindBugs tasks */
+/* ensure the integTest task runs after all tasks named 'test', all Pmd tasks, and all FindBugs tasks */
 gradle.projectsEvaluated {
     allprojects.each { project ->
         def testTasks = project.tasks.findAll { it.name == 'test' }
@@ -60,7 +60,7 @@ gradle.projectsEvaluated {
     }
 }
 
-/* register integration-test source directories in projects that have the IntelliJ IDEA plugin applied */
+/* register integTest source directories in projects that have the IntelliJ IDEA plugin applied */
 if (plugins.hasPlugin('idea')) {
     idea {
         module {

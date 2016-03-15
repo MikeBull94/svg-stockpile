@@ -1,6 +1,7 @@
 plugins {
     id 'com.github.ben-manes.versions' version '0.12.0'
     id 'io.spring.dependency-management' version '0.5.6.RELEASE'
+    id 'net.researchgate.release' version '2.3.4'
 }
 
 description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
@@ -8,27 +9,10 @@ description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
 defaultTasks 'clean', 'build', 'aggregateJavadoc'
 
 apply plugin: 'base'
+apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'wrapper'
 apply plugin: 'com.github.ben-manes.versions'
-
-wrapper {
-    gradleVersion = '2.11'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
-
-dependencyUpdates.resolutionStrategy = {
-    componentSelection { rules ->
-        rules.all { selection ->
-            def rejected = [ 'alpha', 'beta', 'rc', 'cr', 'm' ].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-            }
-
-            if (rejected) {
-                selection.reject('Release candidate')
-            }
-        }
-    }
-}
 
 allprojects {
     apply plugin: 'io.spring.dependency-management'
@@ -38,6 +22,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 
     dependencyManagement {
@@ -55,12 +40,69 @@ allprojects {
     }
 }
 
+wrapper {
+    gradleVersion = '2.11'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
 configurations {
-    doclet
+    doclet {
+        description = 'Configuration for doclet artifacts.'
+    }
 }
 
 dependencies {
     doclet group: 'com.grahamedgecombe.apiviz', name: 'apiviz'
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { selection ->
+            def rejected = [ 'alpha', 'beta', 'rc', 'cr', 'm' ].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
+
+task aggregateJavadoc(type: Javadoc) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = 'Generates aggregated Javadoc API documentation for the main source code of all Java projects.'
+
+    title = rootProject.name
+    destinationDir = file("$buildDir/docs/javadoc")
+
+    options {
+        doclet = 'org.jboss.apiviz.APIviz'
+        docletpath = configurations.doclet.files.asType(List)
+
+        addBooleanOption('nopackagediagram', true)
+
+        showAll()
+        links 'https://docs.oracle.com/javase/8/docs/api/'
+        links 'https://docs.gradle.org/current/javadoc/'
+        links 'http://www.slf4j.org/api/'
+
+        def versions = dependencyManagement.managedVersions
+        links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
+
+        group 'API', 'com.mikebull94.stockpile*'
+        group 'Gradle Plugin', 'com.mikebull94.stockpile.gradle*'
+        group 'Utilities', 'com.mikebull94.stockpile.util*'
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: aggregateJavadoc) {
+    classifier 'javadoc'
+    from aggregateJavadoc.destinationDir
 }
 
 gradle.projectsEvaluated {
@@ -69,10 +111,7 @@ gradle.projectsEvaluated {
     }
 
     if (!javaProjects.empty) {
-        tasks.create(name: 'aggregateJavadoc', type: Javadoc) {
-            group = JavaBasePlugin.DOCUMENTATION_GROUP
-            description = 'Generates aggregated Javadoc API documentation for the main source code of all Java projects.'
-
+        tasks.aggregateJavadoc {
             doFirst {
                 javaProjects.each { project ->
                     project.sourceSets.main.output.each { dir ->
@@ -81,36 +120,76 @@ gradle.projectsEvaluated {
                 }
             }
 
-            title = rootProject.name
-            destinationDir = file("$buildDir/docs/javadoc")
-
             source = javaProjects.javadoc.source
             classpath = files(javaProjects.javadoc.classpath)
 
             options {
-                doclet = 'org.jboss.apiviz.APIviz'
-                docletpath = configurations.doclet.files.asType(List)
-
-                addBooleanOption('nopackagediagram', true)
                 addStringOption('sourceclasspath', files(javaProjects.sourceSets.main.output).asPath)
-
-                showAll()
-                links 'https://docs.oracle.com/javase/8/docs/api/'
-                links 'https://docs.gradle.org/current/javadoc/'
-                links 'http://www.slf4j.org/api/'
-
-                def versions = dependencyManagement.managedVersions;
-                links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
-
-                group 'API', 'com.mikebull94.stockpile*'
-                group 'Gradle Plugin', 'com.mikebull94.stockpile.gradle*'
-                group 'Utilities', 'com.mikebull94.stockpile.util*'
             }
         }
 
-        tasks.create(name: 'javadocJar', type: Jar, dependsOn: aggregateJavadoc) {
-            classifier 'javadoc'
-            from aggregateJavadoc.destinationDir
+        tasks.sourcesJar {
+            from javaProjects.sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives javadocJar
+            archives sourcesJar
+        }
+    }
+
+    artifacts {
+        archives project(':gradle-plugin').tasks.shadowJar
+    }
+
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    groupId = rootProject.group
+                    artifactId = rootProject.name
+                    version = rootProject.version
+                    packaging = 'jar'
+
+                    name = rootProject.name
+                    description = rootProject.description
+                    url = 'https://michael-bull.com/projects/svg-stockpile'
+
+                    scm {
+                        connection = 'scm:git:https://github.com/MikeBull94/svg-stockpile'
+                        developerConnection = 'scm:git:git@github.com:MikeBull94/svg-stockpile.git'
+                        url = 'https://github.com/MikeBull94/svg-stockpile'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'ISC License'
+                            url = 'http://opensource.org/licenses/isc-license.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name = 'Michael Bull'
+                            url = 'https://michael-bull.com'
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -27,12 +27,7 @@ shadowJar {
     }
 
     baseName = rootProject.name
-    classifier = '' // TODO: is there a better way for removing the classifier on the fat jar?
-}
-
-task sourcesJar(type: Jar) {
-    classifier 'sources'
-    from sourceSets.main.allSource
+    classifier = ''
 }
 
 publishing {
@@ -41,23 +36,14 @@ publishing {
             groupId rootProject.group
             artifactId rootProject.name
             version rootProject.version
-
-            artifact rootProject.javadocJar
             artifact shadowJar
-            artifact sourcesJar
         }
-    }
-}
-
-uploadArchives {
-    repositories {
-        mavenLocal()
     }
 }
 
 processIntegTestResources {
     filter(ReplaceTokens, tokens: [
-            'version': rootProject.version
+        'version': rootProject.version
     ])
 }
 
