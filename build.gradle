@@ -193,3 +193,5 @@ gradle.projectsEvaluated {
         }
     }
 }
+
+afterReleaseBuild.dependsOn uploadArchives
