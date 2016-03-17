@@ -1,5 +1,5 @@
 /**
- * Applies the FindBugs(tm) plugin with HTML reporting enabled.
+ * Applies the FindBugs(tm) Plugin with HTML reporting enabled.
  */
 
 apply plugin: 'findbugs'

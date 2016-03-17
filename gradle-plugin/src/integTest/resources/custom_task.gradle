@@ -2,7 +2,6 @@
  * Test build file that creates a custom StockpileTask.
  */
 
-
 import com.mikebull94.stockpile.gradle.StockpileTask
 import com.mikebull94.stockpile.svg.SvgViewBox
 
@@ -12,19 +11,17 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'com.mikebull94', name: 'svg-stockpile', version: '@version@'
+        classpath group: 'com.mikebull94.svg-stockpile', name: 'gradle-plugin', version: '@version@'
     }
 }
 
-apply plugin: 'com.mikebull94.svg-stockpile'
-
-task stockpileSvgs(type: StockpileTask) {
+task customTask(type: StockpileTask) {
     doFirst {
         println 'Starting SVG stockpile...'
     }
 
     inputDir = projectDir
-    output = file('output.svg')
+    output = file('custom_task.svg')
     viewBox = new SvgViewBox(0, 0, 500, 500)
 
     doLast {

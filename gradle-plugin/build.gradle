@@ -1,18 +1,13 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-plugins {
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
-}
-
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/integTest.gradle"
 apply from: "$rootDir/gradle/findbugs.gradle"
 apply from: "$rootDir/gradle/pmd.gradle"
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'maven-publish'
+apply from: "$rootDir/gradle/publish.gradle"
 
-description = 'Gradle plugin that interacts with the svg-stockpile API.'
+description = 'Gradle Plugin that interacts with the svg-stockpile API.'
 
 dependencies {
     compile gradleApi()
@@ -21,30 +16,22 @@ dependencies {
     integTestCompile group: 'org.codehaus.groovy', name: 'groovy-all'
 }
 
-shadowJar {
-    manifest {
-        attributes 'Main-Class': 'com.mikebull94.stockpile.Example'
-    }
-
-    baseName = rootProject.name
-    classifier = ''
+javadoc.options {
+    links 'https://docs.gradle.org/current/javadoc/'
 }
 
-publishing {
-    publications {
-        shadow(MavenPublication) {
-            groupId rootProject.group
-            artifactId rootProject.name
-            version rootProject.version
-            artifact shadowJar
+uploadShadow {
+    repositories {
+        mavenDeployer {
+            repository(url: mavenLocal().url)
         }
     }
 }
 
 processIntegTestResources {
     filter(ReplaceTokens, tokens: [
-        'version': rootProject.version
+        'version': version
     ])
 }
 
-integTest.dependsOn publishToMavenLocal
+integTest.dependsOn uploadShadow

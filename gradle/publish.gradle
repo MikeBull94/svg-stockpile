@@ -1,0 +1,60 @@
+/**
+ * Applies configuration for signing and publishing artifacts to Maven Central.
+ */
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+signing {
+    sign configurations.archives
+}
+
+project.afterEvaluate {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    groupId = project.group
+                    artifactId = project.name
+                    version = project.version
+                    packaging = 'jar'
+
+                    name = project.name
+                    description = project.description
+                    inceptionYear = 2016
+                    url = 'https://michael-bull.com/projects/svg-stockpile'
+
+                    scm {
+                        connection = 'scm:git:https://github.com/MikeBull94/svg-stockpile'
+                        developerConnection = 'scm:git:git@github.com:MikeBull94/svg-stockpile.git'
+                        url = 'https://github.com/MikeBull94/svg-stockpile'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'ISC License'
+                            url = 'http://opensource.org/licenses/isc-license.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name = 'Michael Bull'
+                            url = 'https://michael-bull.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

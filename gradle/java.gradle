@@ -4,11 +4,19 @@
 
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+configurations {
+    doclet {
+        description = 'Configuration for doclet artifacts.'
+    }
+}
+
 dependencies {
+    doclet group: 'com.grahamedgecombe.apiviz', name: 'apiviz'
     compile group: 'com.google.guava', name: 'guava'
     compile group: 'org.slf4j', name: 'slf4j-api'
     compile group: 'org.slf4j', name: 'slf4j-jdk14'
@@ -21,4 +29,49 @@ idea {
         downloadJavadoc = true
         downloadSources = true
     }
+}
+
+shadowJar {
+    classifier = ''
+}
+
+javadoc {
+    doFirst {
+        sourceSets.main.output.each { dir ->
+            dir.mkdirs()
+        }
+    }
+
+    title = "$rootProject.name/$project.name $project.version"
+
+    options {
+        doclet = 'org.jboss.apiviz.APIviz'
+        docletpath = configurations.doclet.files.asType(List)
+
+        addBooleanOption('nopackagediagram', true)
+        addStringOption('sourceclasspath', files(sourceSets.main.output).asPath)
+
+        showAll()
+        links 'https://docs.oracle.com/javase/8/docs/api/'
+        links 'http://www.slf4j.org/api/'
+        links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
+    }
+}
+
+task javadocJar(type: Jar) {
+    group = LifecycleBasePlugin.BUILD_GROUP
+    description = 'Assembles a jar archive containing the Javadoc API documentation.'
+    classifier = 'javadoc'
+    from tasks.javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives shadowJar
+    archives javadocJar
+    archives sourcesJar
 }

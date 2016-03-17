@@ -67,7 +67,7 @@ public final class SvgDocument {
 	public static final QName DEFS_TAG = new QName(NAMESPACE_URI, "defs");
 
 	/**
-	 * The {@link <svg:svg>} tag.
+	 * The {@code <svg:svg>} tag.
 	 */
 	public static final QName EMBEDDED_SVG_TAG = new QName(NAMESPACE_URI, "svg", "svg");
 
@@ -96,6 +96,7 @@ public final class SvgDocument {
 
 	/**
 	 * Creates a {@link StartElement} with the {@code <svg>}.
+	 * @param viewBox The {@link SvgViewBox} to provide the tag with.
 	 * @return The {@link StartElement}
 	 */
 	public static StartElement startSvg(SvgViewBox viewBox) {

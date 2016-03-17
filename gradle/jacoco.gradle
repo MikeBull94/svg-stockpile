@@ -1,5 +1,5 @@
 /**
- * Applies the JaCoCo plugin with HTML reports enabled.
+ * Applies the JaCoCo Plugin with HTML reports enabled.
  */
 
 apply plugin: 'jacoco'

@@ -45,15 +45,25 @@ public final class StockpilePluginTest {
 	}
 
 	@Test
-	public void customTask() {
+	public void createNewTask() {
 		GradleBuildFileTester.test(projectDir, buildFile)
-			.given(gradleFile("customTask"))
-			.given(arguments("stockpileSvgs"))
+			.given(gradleFile("custom_task"))
+			.given(arguments("customTask"))
 			.given(GradleRunner::forwardOutput)
 			.when(GradleRunner::build)
 			.thenBuildResult("Expected start debug output.", outputContains("Starting SVG stockpile..."))
-			.thenBuildResult("Expected outcome of :stackSvgs to be " + SUCCESS, taskOutcome(":stockpileSvgs", SUCCESS))
+			.thenBuildResult("Expected outcome of :customTask to be " + SUCCESS, taskOutcome(":customTask", SUCCESS))
 			.thenBuildResult("Expected finish debug output", outputContains("Finished stockpiling SVGs."))
-			.thenTemporaryFolder("Actual SVG does not match expected", correctOutput("output.svg"));
+			.thenTemporaryFolder("Actual SVG does not match expected", correctOutput("custom_task.svg"));
+	}
+
+	@Test
+	public void modifyExistingTask() {
+		GradleBuildFileTester.test(projectDir, buildFile)
+			.given(gradleFile("default_task"))
+			.given(arguments("stockpile"))
+			.when(GradleRunner::build)
+			.thenBuildResult("Expected outcome of :stockpile to be " + SUCCESS, taskOutcome(":stockpile", SUCCESS))
+			.thenTemporaryFolder("Actual SVG does not match expected", correctOutput("default_task.svg"));
 	}
 }

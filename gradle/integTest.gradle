@@ -60,7 +60,7 @@ gradle.projectsEvaluated {
     }
 }
 
-/* register integTest source directories in projects that have the IntelliJ IDEA plugin applied */
+/* register integTest source directories in projects that have the IntelliJ IDEA Plugin applied */
 if (plugins.hasPlugin('idea')) {
     idea {
         module {

@@ -1,23 +1,21 @@
-plugins {
-    id 'com.github.ben-manes.versions' version '0.12.0'
-    id 'io.spring.dependency-management' version '0.5.6.RELEASE'
-    id 'net.researchgate.release' version '2.3.4'
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath group: 'com.github.ben-manes', name: 'gradle-versions-plugin', version: '0.12.0'
+        classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '1.2.3'
+        classpath group: 'io.spring.gradle', name: 'dependency-management-plugin', version: '0.5.6.RELEASE'
+        classpath group: 'net.researchgate', name: 'gradle-release', version: '2.3.4'
+    }
 }
 
-description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
-
-defaultTasks 'clean', 'build', 'aggregateJavadoc'
-
-apply plugin: 'base'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'wrapper'
-apply plugin: 'com.github.ben-manes.versions'
-
 allprojects {
+    apply plugin: 'com.github.ben-manes.versions'
     apply plugin: 'io.spring.dependency-management'
 
-    group = 'com.mikebull94'
+    group = 'com.mikebull94.svg-stockpile'
 
     repositories {
         mavenCentral()
@@ -39,19 +37,21 @@ allprojects {
     }
 }
 
+apply plugin: 'base'
+apply plugin: 'wrapper'
+apply plugin: 'net.researchgate.release'
+
+description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
+
+defaultTasks 'clean', 'build', 'javadoc'
+
+ext {
+    versions = dependencyManagement.managedVersions
+}
+
 wrapper {
-    gradleVersion = '2.11'
+    gradleVersion = '2.12'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
-
-configurations {
-    doclet {
-        description = 'Configuration for doclet artifacts.'
-    }
-}
-
-dependencies {
-    doclet group: 'com.grahamedgecombe.apiviz', name: 'apiviz'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -63,131 +63,6 @@ dependencyUpdates.resolutionStrategy = {
 
             if (rejected) {
                 selection.reject('Release candidate')
-            }
-        }
-    }
-}
-
-task aggregateJavadoc(type: Javadoc) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = 'Generates aggregated Javadoc API documentation for the main source code of all Java projects.'
-
-    title = rootProject.name
-    destinationDir = file("$buildDir/docs/javadoc")
-
-    options {
-        doclet = 'org.jboss.apiviz.APIviz'
-        docletpath = configurations.doclet.files.asType(List)
-
-        addBooleanOption('nopackagediagram', true)
-
-        showAll()
-        links 'https://docs.oracle.com/javase/8/docs/api/'
-        links 'https://docs.gradle.org/current/javadoc/'
-        links 'http://www.slf4j.org/api/'
-
-        def versions = dependencyManagement.managedVersions
-        links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
-
-        group 'API', 'com.mikebull94.stockpile*'
-        group 'Gradle Plugin', 'com.mikebull94.stockpile.gradle*'
-        group 'Utilities', 'com.mikebull94.stockpile.util*'
-    }
-}
-
-task sourcesJar(type: Jar) {
-    classifier 'sources'
-}
-
-task javadocJar(type: Jar, dependsOn: aggregateJavadoc) {
-    classifier 'javadoc'
-    from aggregateJavadoc.destinationDir
-}
-
-gradle.projectsEvaluated {
-    def javaProjects = allprojects.findAll { project ->
-        project.plugins.hasPlugin(JavaPlugin)
-    }
-
-    if (!javaProjects.empty) {
-        tasks.aggregateJavadoc {
-            doFirst {
-                javaProjects.each { project ->
-                    project.sourceSets.main.output.each { dir ->
-                        dir.mkdirs()
-                    }
-                }
-            }
-
-            source = javaProjects.javadoc.source
-            classpath = files(javaProjects.javadoc.classpath)
-
-            options {
-                addStringOption('sourceclasspath', files(javaProjects.sourceSets.main.output).asPath)
-            }
-        }
-
-        tasks.sourcesJar {
-            from javaProjects.sourceSets.main.allSource
-        }
-
-        artifacts {
-            archives javadocJar
-            archives sourcesJar
-        }
-    }
-
-    artifacts {
-        archives project(':gradle-plugin').tasks.shadowJar
-    }
-
-    signing {
-        sign configurations.archives
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project {
-                    groupId = rootProject.group
-                    artifactId = rootProject.name
-                    version = rootProject.version
-                    packaging = 'jar'
-
-                    name = rootProject.name
-                    description = rootProject.description
-                    url = 'https://michael-bull.com/projects/svg-stockpile'
-
-                    scm {
-                        connection = 'scm:git:https://github.com/MikeBull94/svg-stockpile'
-                        developerConnection = 'scm:git:git@github.com:MikeBull94/svg-stockpile.git'
-                        url = 'https://github.com/MikeBull94/svg-stockpile'
-                    }
-
-                    licenses {
-                        license {
-                            name = 'ISC License'
-                            url = 'http://opensource.org/licenses/isc-license.txt'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            name = 'Michael Bull'
-                            url = 'https://michael-bull.com'
-                        }
-                    }
-                }
             }
         }
     }

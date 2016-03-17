@@ -1,0 +1,23 @@
+/**
+ * Test build file that configures the default StockpileTask.
+ */
+
+import com.mikebull94.stockpile.svg.SvgViewBox
+
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath group: 'com.mikebull94.svg-stockpile', name: 'gradle-plugin', version: '@version@'
+    }
+}
+
+apply plugin: 'com.mikebull94.svg-stockpile'
+
+stockpile {
+    inputDir = projectDir
+    output = file('default_task.svg')
+    viewBox = new SvgViewBox(0, 0, 500, 500)
+}

@@ -1,5 +1,5 @@
 /**
- * Applies the PMD plugin with a custom ruleset and HTML reports enabled.
+ * Applies the PMD Plugin with a custom ruleset and HTML reports enabled.
  */
 
 apply plugin: 'pmd'
