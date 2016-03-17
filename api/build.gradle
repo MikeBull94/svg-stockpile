@@ -3,7 +3,6 @@ apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/findbugs.gradle"
 apply from: "$rootDir/gradle/pmd.gradle"
 apply from: "$rootDir/gradle/publish.gradle"
-apply from: "$rootDir/gradle/release.gradle"
 
 description = 'API for interacting with svg-stockpile.'
 
