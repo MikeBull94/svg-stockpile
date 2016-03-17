@@ -7,7 +7,9 @@ import com.mikebull94.stockpile.svg.SvgViewBox
 
 buildscript {
     repositories {
-        mavenLocal()
+        maven {
+            url '@integTestRepo@'
+        }
     }
 
     dependencies {

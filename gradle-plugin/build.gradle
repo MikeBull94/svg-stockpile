@@ -15,24 +15,35 @@ dependencies {
     compile project(':api')
     integTestCompile gradleTestKit()
     integTestCompile group: 'org.codehaus.groovy', name: 'groovy-all'
+    integTestCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
 }
 
 javadoc.options {
     links 'https://docs.gradle.org/current/javadoc/'
 }
 
-uploadShadow {
+def integTestRepo = "file://$buildDir/integration-test-repo"
+
+processIntegTestResources {
+    filter(ReplaceTokens, tokens: [
+        'version': version,
+        'integTestRepo': integTestRepo.toString()
+    ])
+}
+
+task uploadIntegTest(type: Upload) {
+    group = BasePlugin.UPLOAD_GROUP
+    description = "Uploads all artifacts belonging to $configurations.shadow to $integTestRepo"
+    configuration = configurations.shadow
+
     repositories {
         mavenDeployer {
-            repository(url: mavenLocal().url)
+            repository(url: integTestRepo)
+            pom.scopeMappings.mappings.remove(configurations.compile)
+            pom.scopeMappings.mappings.remove(configurations.runtime)
+            pom.scopeMappings.addMapping(MavenPlugin.RUNTIME_PRIORITY, configurations.shadow, Conf2ScopeMappingContainer.RUNTIME)
         }
     }
 }
 
-processIntegTestResources {
-    filter(ReplaceTokens, tokens: [
-        'version': version
-    ])
-}
-
-integTest.dependsOn uploadShadow
+integTest.dependsOn uploadIntegTest

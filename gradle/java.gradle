@@ -4,7 +4,6 @@
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -29,10 +28,6 @@ idea {
         downloadJavadoc = true
         downloadSources = true
     }
-}
-
-shadowJar {
-    classifier = ''
 }
 
 javadoc {
@@ -71,7 +66,6 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    archives shadowJar
     archives javadocJar
     archives sourcesJar
 }
