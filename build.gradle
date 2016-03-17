@@ -66,5 +66,3 @@ dependencyUpdates.resolutionStrategy = {
         }
     }
 }
-
-afterReleaseBuild.dependsOn uploadArchives

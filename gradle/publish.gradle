@@ -58,4 +58,6 @@ project.afterEvaluate {
             }
         }
     }
+
+    afterReleaseBuild.dependsOn uploadArchives
 }
