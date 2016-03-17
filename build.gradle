@@ -14,7 +14,6 @@ buildscript {
 allprojects {
     apply plugin: 'com.github.ben-manes.versions'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'net.researchgate.release'
 
     group = 'com.mikebull94.svg-stockpile'
 

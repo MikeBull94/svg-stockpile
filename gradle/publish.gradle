@@ -4,6 +4,7 @@
 
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'net.researchgate.release'
 
 signing {
     sign configurations.archives
