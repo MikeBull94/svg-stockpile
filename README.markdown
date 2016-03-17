@@ -53,7 +53,7 @@ import com.mikebull94.stockpile.svg.SvgViewBox
 
 buildscript {
     repositories {
-        mavenLocal()
+        mavenCentral()
     }
 
     dependencies {
