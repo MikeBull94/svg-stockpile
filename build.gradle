@@ -53,6 +53,7 @@ allprojects {
 
 apply plugin: 'base'
 apply plugin: 'wrapper'
+apply plugin: 'net.researchgate.release'
 
 description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
 
@@ -65,4 +66,8 @@ ext {
 wrapper {
     gradleVersion = '2.12'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+release {
+    failOnSnapshotDependencies = false
 }
