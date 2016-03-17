@@ -22,6 +22,20 @@ allprojects {
         mavenLocal()
     }
 
+    dependencyUpdates.resolutionStrategy = {
+        componentSelection { rules ->
+            rules.all { selection ->
+                def rejected = [ 'alpha', 'beta', 'rc', 'cr', 'm' ].any { qualifier ->
+                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                }
+
+                if (rejected) {
+                    selection.reject('Release candidate')
+                }
+            }
+        }
+    }
+
     dependencyManagement {
         dependencies {
             dependency group: 'com.google.guava', name: 'guava', version: '19.0'
@@ -51,18 +65,4 @@ ext {
 wrapper {
     gradleVersion = '2.12'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
-
-dependencyUpdates.resolutionStrategy = {
-    componentSelection { rules ->
-        rules.all { selection ->
-            def rejected = [ 'alpha', 'beta', 'rc', 'cr', 'm' ].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-            }
-
-            if (rejected) {
-                selection.reject('Release candidate')
-            }
-        }
-    }
 }
