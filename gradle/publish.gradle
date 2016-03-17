@@ -4,15 +4,6 @@
 
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-shadowJar {
-    classifier = ''
-}
-
-artifacts {
-    archives shadowJar
-}
 
 signing {
     sign configurations.archives

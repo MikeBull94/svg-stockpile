@@ -6,7 +6,9 @@ apply plugin: 'net.researchgate.release'
 
 release {
     failOnSnapshotDependencies = false
-    tagTemplate = '$name-$version' // requires single-quotes, otherwise `$` is interpreted already in your build script
+    tagTemplate = '$name-$version'
 }
 
-afterReleaseBuild.dependsOn uploadArchives
+project.afterEvaluate {
+    afterReleaseBuild.dependsOn uploadShadow
+}
