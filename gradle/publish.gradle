@@ -6,11 +6,13 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 signing {
-    sign configurations.archives
+    sign configurations.shadow
 }
 
-project.afterEvaluate {
+afterEvaluate {
     uploadShadow {
+        configuration = signing.configuration
+
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -58,5 +60,5 @@ project.afterEvaluate {
         }
     }
 
-    rootProject.afterReleaseBuild.dependsOn uploadShadow
+    rootProject.tasks.afterReleaseBuild.dependsOn tasks.uploadShadow
 }

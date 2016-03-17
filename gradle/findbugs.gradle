@@ -4,7 +4,7 @@
 
 apply plugin: 'findbugs'
 
-project.tasks.withType(FindBugs) {
+tasks.withType(FindBugs) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
     reports {

@@ -41,11 +41,11 @@ task integTest(type: Test) {
         junitXml.destination = "$buildDir/integration-test-results"
     }
 
-    mustRunAfter test
+    mustRunAfter tasks.test
 }
 
 /* add the integTest to the check lifecycle */
-check.dependsOn integTest
+tasks.check.dependsOn tasks.integTest
 
 /* ensure the integTest task runs after all tasks named 'test', all Pmd tasks, and all FindBugs tasks */
 gradle.projectsEvaluated {
