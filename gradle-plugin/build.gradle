@@ -15,7 +15,6 @@ dependencies {
     compile project(':api')
     integTestCompile gradleTestKit()
     integTestCompile group: 'org.codehaus.groovy', name: 'groovy-all'
-    integTestCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
 }
 
 javadoc.options {
