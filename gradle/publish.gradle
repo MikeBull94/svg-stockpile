@@ -4,14 +4,9 @@
 
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply plugin: 'net.researchgate.release'
 
 signing {
     sign configurations.archives
-}
-
-release {
-    failOnSnapshotDependencies = false
 }
 
 project.afterEvaluate {
@@ -62,6 +57,4 @@ project.afterEvaluate {
             }
         }
     }
-
-    afterReleaseBuild.dependsOn uploadArchives
 }

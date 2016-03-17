@@ -1,0 +1,11 @@
+/**
+ * Applies configuration for creating a release.
+ */
+
+apply plugin: 'net.researchgate.release'
+
+release {
+    failOnSnapshotDependencies = false
+}
+
+afterReleaseBuild.dependsOn uploadArchives
