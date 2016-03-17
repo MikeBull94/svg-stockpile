@@ -14,6 +14,7 @@ buildscript {
 allprojects {
     apply plugin: 'com.github.ben-manes.versions'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'net.researchgate.release'
 
     group = 'com.mikebull94.svg-stockpile'
 
@@ -39,7 +40,6 @@ allprojects {
 
 apply plugin: 'base'
 apply plugin: 'wrapper'
-apply plugin: 'net.researchgate.release'
 
 description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
 
