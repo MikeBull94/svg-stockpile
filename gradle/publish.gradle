@@ -10,6 +10,10 @@ signing {
     sign configurations.archives
 }
 
+release {
+    failOnSnapshotDependencies = false
+}
+
 project.afterEvaluate {
     uploadArchives {
         repositories {
