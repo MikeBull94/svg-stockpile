@@ -5,68 +5,69 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-afterEvaluate {
-    signing {
-        sign configurations.archives
-    }
+signing {
+    sign configurations.archives
+}
 
-    ext {
-        isSnapshot = version.endsWith("-SNAPSHOT")
-    }
+ext {
+    isSnapshot = version.endsWith("-SNAPSHOT")
+}
 
-    uploadShadow {
-        configuration = configurations.archives
+uploadShadow {
+    configuration = configurations.archives
 
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                if (isSnapshot) {
-                    repository(url: "file://$buildDir/repo")
-                } else {
-                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                        authentication(userName: ossrhUsername, password: ossrhPassword)
-                    }
-
-                    snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                        authentication(userName: ossrhUsername, password: ossrhPassword)
-                    }
+            if (isSnapshot) {
+                repository(url: "file://$buildDir/repo")
+            } else {
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
                 }
 
-                pom.project {
-                    groupId = project.group
-                    artifactId = project.name
-                    version = project.version
-                    packaging = 'jar'
-
-                    name = project.name
-                    description = project.description
-                    inceptionYear = 2016
-                    url = 'https://michael-bull.com/projects/svg-stockpile'
-
-                    scm {
-                        connection = 'scm:git:https://github.com/MikeBull94/svg-stockpile'
-                        developerConnection = 'scm:git:git@github.com:MikeBull94/svg-stockpile.git'
-                        url = 'https://github.com/MikeBull94/svg-stockpile'
-                    }
-
-                    licenses {
-                        license {
-                            name = 'ISC License'
-                            url = 'http://opensource.org/licenses/isc-license.txt'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            name = 'Michael Bull'
-                            url = 'https://michael-bull.com'
-                        }
-                    }
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
                 }
             }
         }
     }
-
-    rootProject.tasks.afterReleaseBuild.dependsOn tasks.uploadShadow
 }
+
+rootProject.tasks.afterReleaseBuild.dependsOn tasks.uploadShadow
+
+afterEvaluate {
+    uploadShadow.repositories.mavenDeployer.pom.project {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+        packaging = 'jar'
+
+        name = project.name
+        description = project.description
+        inceptionYear = 2016
+        url = 'https://michael-bull.com/projects/svg-stockpile'
+
+        scm {
+            connection = 'scm:git:https://github.com/MikeBull94/svg-stockpile'
+            developerConnection = 'scm:git:git@github.com:MikeBull94/svg-stockpile.git'
+            url = 'https://github.com/MikeBull94/svg-stockpile'
+        }
+
+        licenses {
+            license {
+                name = 'ISC License'
+                url = 'http://opensource.org/licenses/isc-license.txt'
+            }
+        }
+
+        developers {
+            developer {
+                name = 'Michael Bull'
+                url = 'https://michael-bull.com'
+            }
+        }
+    }
+}
+
