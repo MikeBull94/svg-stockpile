@@ -7,7 +7,7 @@ buildscript {
         classpath group: 'com.github.ben-manes', name: 'gradle-versions-plugin', version: '0.12.0'
         classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '1.2.3'
         classpath group: 'io.spring.gradle', name: 'dependency-management-plugin', version: '0.5.6.RELEASE'
-        classpath group: 'net.researchgate', name: 'gradle-release', version: '2.3.4'
+        classpath group: 'net.researchgate', name: 'gradle-release', version: '2.3.5'
     }
 }
 
