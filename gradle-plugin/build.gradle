@@ -29,19 +29,28 @@ processIntegTestResources {
     ])
 }
 
-task uploadIntegTest(type: Upload) {
+task uploadLocalApi(type: Upload) {
     group = BasePlugin.UPLOAD_GROUP
-    description = "Uploads all artifacts belonging to $configurations.shadow to $integTestRepo"
-    configuration = configurations.shadow
+    description = "Uploads all artifacts belonging to ${project(':api').configurations.archives} to $integTestRepo"
+    configuration = project(':api').configurations.archives
 
     repositories {
         mavenDeployer {
             repository(url: integTestRepo)
-            pom.scopeMappings.mappings.remove(configurations.compile)
-            pom.scopeMappings.mappings.remove(configurations.runtime)
-            pom.scopeMappings.addMapping(MavenPlugin.RUNTIME_PRIORITY, configurations.shadow, Conf2ScopeMappingContainer.RUNTIME)
         }
     }
 }
 
-integTest.dependsOn uploadIntegTest
+task uploadLocalGradlePlugin(type: Upload) {
+    group = BasePlugin.UPLOAD_GROUP
+    description = "Uploads all artifacts belonging to $configurations.archives to $integTestRepo"
+    configuration = configurations.archives
+
+    repositories {
+        mavenDeployer {
+            repository(url: integTestRepo)
+        }
+    }
+}
+
+integTest.dependsOn uploadLocalApi, uploadLocalGradlePlugin

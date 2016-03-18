@@ -13,32 +13,30 @@ ext {
     isSnapshot = version.endsWith("-SNAPSHOT")
 }
 
-uploadShadow {
-    configuration = configurations.archives
-
+uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            if (isSnapshot) {
+//            if (isSnapshot) {
                 repository(url: "file://$buildDir/repo")
-            } else {
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-            }
+//            } else {
+//                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//                    authentication(userName: ossrhUsername, password: ossrhPassword)
+//                }
+//
+//                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+//                    authentication(userName: ossrhUsername, password: ossrhPassword)
+//                }
+//            }
         }
     }
 }
 
-rootProject.tasks.afterReleaseBuild.dependsOn tasks.uploadShadow
+rootProject.tasks.afterReleaseBuild.dependsOn tasks.uploadArchives
 
 afterEvaluate {
-    uploadShadow.repositories.mavenDeployer.pom.project {
+    tasks.uploadArchives.repositories.mavenDeployer.pom.project {
         groupId = project.group
         artifactId = project.name
         version = project.version

@@ -4,7 +4,6 @@
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -62,12 +61,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 task sourcesJar(type: Jar) {
+    group = LifecycleBasePlugin.BUILD_GROUP
+    description = 'Assembles a jar archive containing the main classes with sources.'
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
 artifacts {
-    archives shadowJar
     archives javadocJar
     archives sourcesJar
 }

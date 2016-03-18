@@ -7,13 +7,14 @@ import com.mikebull94.stockpile.svg.SvgViewBox
 
 buildscript {
     repositories {
+        mavenCentral()
         maven {
             url '@integTestRepo@'
         }
     }
 
     dependencies {
-        classpath group: 'com.mikebull94.svg-stockpile', name: 'gradle-plugin', version: '@version@', classifier: 'all'
+        classpath group: 'com.mikebull94.svg-stockpile', name: 'gradle-plugin', version: '@version@'
     }
 }
 
