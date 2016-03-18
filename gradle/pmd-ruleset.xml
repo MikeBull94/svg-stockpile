@@ -25,6 +25,7 @@
     <exclude name="OnlyOneReturn" />
     <exclude name="AtLeastOneConstructor" />
     <exclude name="CallSuperInConstructor" />
+    <exclude name="DefaultPackage" />
     <exclude name="DataflowAnomalyAnalysis" />
     <exclude name="OneDeclarationPerLine" />
     <exclude name="AvoidPrefixingMethodParameters" />

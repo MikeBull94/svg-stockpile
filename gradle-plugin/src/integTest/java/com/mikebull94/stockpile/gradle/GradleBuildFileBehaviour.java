@@ -22,7 +22,7 @@ final class GradleBuildFileBehaviour {
 	private static final String BUILD_FILE_PATH_FORMAT = "build/resources/integTest/%s.gradle";
 	private static final Path EXPECTED = Paths.get("build/resources/integTest/expected.svg");
 
-	public static BiConsumer<TemporaryFolder, File> gradleFile(String name) {
+	static BiConsumer<TemporaryFolder, File> gradleFile(String name) {
 		return (folder, buildFile) -> {
 			Path path = Paths.get(String.format(BUILD_FILE_PATH_FORMAT, name));
 
@@ -39,19 +39,19 @@ final class GradleBuildFileBehaviour {
 		};
 	}
 
-	public static Function<GradleRunner, GradleRunner> arguments(String... arguments) {
+	static Function<GradleRunner, GradleRunner> arguments(String... arguments) {
 		return input -> input.withArguments(arguments);
 	}
 
-	public static Predicate<BuildResult> outputContains(CharSequence text) {
+	static Predicate<BuildResult> outputContains(CharSequence text) {
 		return result -> result.getOutput().contains(text);
 	}
 
-	public static Predicate<BuildResult> taskOutcome(String taskName, TaskOutcome outcome) {
+	static Predicate<BuildResult> taskOutcome(String taskName, TaskOutcome outcome) {
 		return result -> result.task(taskName).getOutcome() == outcome;
 	}
 
-	public static Predicate<TemporaryFolder> correctOutput(String outputFile) {
+	static Predicate<TemporaryFolder> correctOutput(String outputFile) {
 		return projectDir -> {
 			try {
 				Path output = projectDir.getRoot().toPath().resolve(outputFile);

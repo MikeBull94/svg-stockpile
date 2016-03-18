@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import static org.junit.Assert.assertTrue;
 
 final class GradleBuildFileTester {
-	public static GradleBuildFileTester test(TemporaryFolder projectDir, File buildFile) {
+	static GradleBuildFileTester test(TemporaryFolder projectDir, File buildFile) {
 		return new GradleBuildFileTester(projectDir, buildFile);
 	}
 
@@ -28,27 +28,27 @@ final class GradleBuildFileTester {
 		this.runner = GradleRunner.create().withProjectDir(projectDir.getRoot());
 	}
 
-	public GradleBuildFileTester given(BiConsumer<TemporaryFolder, File> consumer) {
+	GradleBuildFileTester given(BiConsumer<TemporaryFolder, File> consumer) {
 		consumer.accept(projectDir, buildFile);
 		return this;
 	}
 
-	public GradleBuildFileTester given(Function<GradleRunner, GradleRunner> function) {
+	GradleBuildFileTester given(Function<GradleRunner, GradleRunner> function) {
 		runner = function.apply(runner);
 		return this;
 	}
 
-	public GradleBuildFileTester when(Function<GradleRunner, BuildResult> function) {
+	GradleBuildFileTester when(Function<GradleRunner, BuildResult> function) {
 		result = function.apply(runner);
 		return this;
 	}
 
-	public GradleBuildFileTester thenBuildResult(String message, Predicate<BuildResult> predicate) {
+	GradleBuildFileTester thenBuildResult(String message, Predicate<BuildResult> predicate) {
 		assertTrue(message, predicate.test(result));
 		return this;
 	}
 
-	public GradleBuildFileTester thenTemporaryFolder(String message, Predicate<TemporaryFolder> predicate) {
+	GradleBuildFileTester thenTemporaryFolder(String message, Predicate<TemporaryFolder> predicate) {
 		assertTrue(message, predicate.test(projectDir));
 		return this;
 	}
