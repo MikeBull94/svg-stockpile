@@ -140,7 +140,6 @@ This project is available under the terms of the ISC license. See the
 
 [example.java]: api/src/main/example/com/mikebull94/stockpile/Example.java
 [api-resources]: api/src/main/resources
-[stockpiletask.java]: gradle-plugin/src/main/java/com/mikebull94/stockpile/gradle/StockpileTask
 [unit-tests]: api/src/test/java
 
 [svg]: https://www.w3.org/Graphics/SVG/
