@@ -1,15 +1,25 @@
 # svg-stockpile
 
-An optimizing and stacking tool for [Scalable Vector Graphics][svg], written in
-[Java][java].
+[![Build Status][build-status-img]][build-status]
+
+## Introduction
+
+`svg-stockpile` is an optimizing and stacking tool for
+[Scalable Vector Graphics][svg], written in [Java][java].
 
 With SVGs being [heavily supported][caniuse-svg] on the web many may wish to
 compress and package all of their SVG assets into a single optimized file. This
-technique is known as using a [sprite-sheet][spritesheet]. This can be achieved
-in SVG documents with the use of [SVG fragment identifiers][svg-fragments], a
-method of rendering part of an SVG by defining a view ID and referring to it in
-an `<img>` tag. This technique is [fairly supported][caniuse-svg-fragment] by
-most modern browsers.
+technique is known as using a [sprite-sheet][spritesheet], and can be achieved
+in SVG documents with the use of [fragment identifiers][svg-fragments], the use
+of which is [fairly supported][caniuse-svg-fragment] by most modern browsers.
+
+Each fragment renders part of the SVG document by defining a view identifier.
+The unique views may then be rendered in an [HTML][html] document via the
+`<img>` tag, such as in the following example:
+
+```html
+<img src="example.svg#layer1" alt="Example" width="50" height="50" />
+```
 
 ## Documentation
 
@@ -142,12 +152,15 @@ This project is available under the terms of the ISC license. See the
 [api-resources]: api/src/main/resources
 [unit-tests]: api/src/test/java
 
+[build-status-img]: https://travis-ci.org/MikeBull94/svg-stockpile.svg
+[build-status]: https://travis-ci.org/MikeBull94/svg-stockpile
 [svg]: https://www.w3.org/Graphics/SVG/
 [java]: https://java.com
 [caniuse-svg]: http://caniuse.com/#feat=svg
 [spritesheet]: https://css-tricks.com/css-sprites/
 [svg-fragments]: https://css-tricks.com/svg-fragment-identifiers-work/
 [caniuse-svg-fragment]: http://caniuse.com/#feat=svg-fragment
+[html]: https://www.w3.org/html/
 [api-javadoc]: https://www.javadoc.io/doc/com.mikebull94.svg-stockpile/api/
 [gradle-plugin-javadoc]: https://www.javadoc.io/doc/com.mikebull94.svg-stockpile/gradle-plugin/
 [maven-central]: http://search.maven.org/
