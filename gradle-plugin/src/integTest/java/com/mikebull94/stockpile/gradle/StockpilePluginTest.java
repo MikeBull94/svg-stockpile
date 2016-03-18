@@ -19,6 +19,7 @@ import static com.mikebull94.stockpile.gradle.GradleBuildFileBehaviour.correctOu
 import static com.mikebull94.stockpile.gradle.GradleBuildFileBehaviour.gradleFile;
 import static com.mikebull94.stockpile.gradle.GradleBuildFileBehaviour.outputContains;
 import static com.mikebull94.stockpile.gradle.GradleBuildFileBehaviour.taskOutcome;
+import static com.mikebull94.stockpile.gradle.GradleBuildFileTester.test;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 
 public final class StockpilePluginTest {
@@ -46,7 +47,7 @@ public final class StockpilePluginTest {
 
 	@Test
 	public void createNewTask() {
-		GradleBuildFileTester.test(projectDir, buildFile)
+		test(projectDir, buildFile)
 			.given(gradleFile("custom_task"))
 			.given(arguments("customTask"))
 			.given(GradleRunner::forwardOutput)
@@ -59,7 +60,7 @@ public final class StockpilePluginTest {
 
 	@Test
 	public void modifyExistingTask() {
-		GradleBuildFileTester.test(projectDir, buildFile)
+		test(projectDir, buildFile)
 			.given(gradleFile("default_task"))
 			.given(arguments("stockpile"))
 			.when(GradleRunner::build)

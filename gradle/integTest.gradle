@@ -2,8 +2,6 @@
  * Configures a Java integration test source-set and adds an integTest task to the check lifecycle.
  */
 
-apply plugin: 'java'
-
 sourceSets {
     integTest {
         java.srcDir 'src/integTest/java'
