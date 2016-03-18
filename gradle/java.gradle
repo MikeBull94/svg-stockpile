@@ -1,5 +1,5 @@
 /**
- * Configures a Java build environment with common dependencies when applied to any project.
+ * Provides a Java build environment with common dependencies and Javadoc + sources artifacts when applied to any project.
  */
 
 apply plugin: 'java'
