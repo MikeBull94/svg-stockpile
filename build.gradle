@@ -12,27 +12,12 @@ buildscript {
 }
 
 allprojects {
-    apply plugin: 'com.github.ben-manes.versions'
     apply plugin: 'io.spring.dependency-management'
 
     group = 'com.mikebull94.svg-stockpile'
 
     repositories {
         mavenCentral()
-    }
-
-    dependencyUpdates.resolutionStrategy = {
-        componentSelection { rules ->
-            rules.all { selection ->
-                def rejected = [ 'alpha', 'beta', 'rc', 'cr', 'm' ].any { qualifier ->
-                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-                }
-
-                if (rejected) {
-                    selection.reject('Release candidate')
-                }
-            }
-        }
     }
 
     dependencyManagement {
@@ -52,6 +37,7 @@ allprojects {
 
 apply plugin: 'base'
 apply plugin: 'wrapper'
+apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'net.researchgate.release'
 
 description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
@@ -69,4 +55,18 @@ wrapper {
 
 release {
     failOnSnapshotDependencies = false
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { selection ->
+            def rejected = [ 'alpha', 'beta', 'rc', 'cr', 'm' ].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
 }
