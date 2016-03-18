@@ -5,24 +5,32 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-signing {
-    sign configurations.shadow
-}
-
 afterEvaluate {
+    signing {
+        sign configurations.archives
+    }
+
+    ext {
+        isSnapshot = version.endsWith("-SNAPSHOT")
+    }
+
     uploadShadow {
-        configuration = signing.configuration
+        configuration = configurations.archives
 
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
+                if (isSnapshot) {
+                    repository(url: "file://$buildDir/repo")
+                } else {
+                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
 
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                    snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
                 }
 
                 pom.project {

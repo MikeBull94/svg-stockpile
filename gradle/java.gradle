@@ -31,10 +31,6 @@ idea {
     }
 }
 
-shadowJar {
-    classifier = ''
-}
-
 javadoc {
     doFirst {
         sourceSets.main.output.each { dir ->
@@ -58,7 +54,7 @@ javadoc {
     }
 }
 
-task javadocJar(type: Jar) {
+task javadocJar(type: Jar, dependsOn: javadoc) {
     group = LifecycleBasePlugin.BUILD_GROUP
     description = 'Assembles a jar archive containing the Javadoc API documentation.'
     classifier = 'javadoc'
@@ -71,6 +67,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    shadow javadocJar
-    shadow sourcesJar
+    archives shadowJar
+    archives javadocJar
+    archives sourcesJar
 }
