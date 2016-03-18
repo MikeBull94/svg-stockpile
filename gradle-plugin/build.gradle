@@ -20,37 +20,11 @@ javadoc.options {
     links 'https://docs.gradle.org/current/javadoc/'
 }
 
-def integTestRepo = "file://$buildDir/integration-test-repo"
-
 processIntegTestResources {
     filter(ReplaceTokens, tokens: [
-        'version': version,
-        'integTestRepo': integTestRepo.toString()
+        'version': version
     ])
 }
 
-task uploadLocalApi(type: Upload) {
-    group = BasePlugin.UPLOAD_GROUP
-    description = "Uploads all artifacts belonging to ${project(':api').configurations.archives} to $integTestRepo"
-    configuration = project(':api').configurations.archives
-
-    repositories {
-        mavenDeployer {
-            repository(url: integTestRepo)
-        }
-    }
-}
-
-task uploadLocalGradlePlugin(type: Upload) {
-    group = BasePlugin.UPLOAD_GROUP
-    description = "Uploads all artifacts belonging to $configurations.archives to $integTestRepo"
-    configuration = configurations.archives
-
-    repositories {
-        mavenDeployer {
-            repository(url: integTestRepo)
-        }
-    }
-}
-
-integTest.dependsOn uploadLocalApi, uploadLocalGradlePlugin
+tasks.integTest.dependsOn tasks.install
+tasks.integTest.dependsOn project(':api').tasks.install

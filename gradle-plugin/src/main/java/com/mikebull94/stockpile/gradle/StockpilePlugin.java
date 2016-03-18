@@ -11,7 +11,7 @@ public final class StockpilePlugin implements Plugin<Project> {
 
 	/**
 	 * Applies this {@link Plugin} to a {@link Project}.
-	 * @param project The {@link Project}.
+	 * @param project The {@link Project} to apply this {@link Plugin} to.
 	 */
 	@Override
 	public void apply(Project project) {
