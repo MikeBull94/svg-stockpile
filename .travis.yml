@@ -1,5 +1,11 @@
 language: java
 jdk:
   - oraclejdk8
+
 notifications:
   email: false
+
+addons:
+  apt:
+    packages:
+      - graphviz
