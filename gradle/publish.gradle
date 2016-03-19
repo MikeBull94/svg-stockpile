@@ -5,20 +5,23 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-signing {
-    sign configurations.archives
-}
-
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
+ext.isCI = System.getenv('CI') != null
+
+if (!isCI) {
+    signing {
+        sign configurations.archives
+    }
+}
 
 tasks.uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            if (isSnapshot) {
+            if (isSnapshot || isCI) {
                 repository(url: "file://$buildDir/repo")
             } else {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUsername, password: ossrhPassword)
                 }
