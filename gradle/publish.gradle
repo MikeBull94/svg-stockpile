@@ -1,7 +1,3 @@
-/**
- * Applies configuration for signing and publishing artifacts to Maven Central.
- */
-
 apply plugin: 'maven'
 apply plugin: 'signing'
 

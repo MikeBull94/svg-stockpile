@@ -1,7 +1,3 @@
-/**
- * Applies the JaCoCo Plugin with HTML reports enabled.
- */
-
 apply plugin: 'jacoco'
 
 check.dependsOn jacocoTestReport

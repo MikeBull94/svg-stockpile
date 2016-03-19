@@ -1,3 +1,7 @@
+defaultTasks 'clean', 'build', 'javadoc'
+
+description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
+
 buildscript {
     repositories {
         jcenter()
@@ -5,33 +9,7 @@ buildscript {
 
     dependencies {
         classpath group: 'com.github.ben-manes', name: 'gradle-versions-plugin', version: '0.12.0'
-        classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '1.2.3'
-        classpath group: 'io.spring.gradle', name: 'dependency-management-plugin', version: '0.5.6.RELEASE'
         classpath group: 'net.researchgate', name: 'gradle-release', version: '2.3.5'
-    }
-}
-
-allprojects {
-    apply plugin: 'io.spring.dependency-management'
-
-    group = 'com.mikebull94.svg-stockpile'
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencyManagement {
-        dependencies {
-            dependency group: 'com.google.guava', name: 'guava', version: '19.0'
-            dependency group: 'com.grahamedgecombe.apiviz', name: 'apiviz', version: '1.3.3'
-            dependency group: 'junit', name: 'junit', version: '4.12'
-            dependency group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.6'
-            dependency group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
-            dependencySet(group: 'org.slf4j', version: '1.7.18') {
-                entry 'slf4j-api'
-                entry 'slf4j-jdk14'
-            }
-        }
     }
 }
 
@@ -40,22 +18,20 @@ apply plugin: 'wrapper'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'net.researchgate.release'
 
-description = 'An optimizing and stacking tool for Scalable Vector Graphics.'
-
-defaultTasks 'clean', 'build', 'javadoc'
-
-ext {
-    versions = dependencyManagement.managedVersions
-}
-
 wrapper {
     gradleVersion = '2.12'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-release {
-    failOnSnapshotDependencies = false
-}
+ext.deps = [
+    'guava'      : dependencies.create(group: 'com.google.guava', name: 'guava', version: '19.0'),
+    'apiviz'     : dependencies.create(group: 'com.grahamedgecombe.apiviz', name: 'apiviz', version: '1.3.3'),
+    'slf4j-api'  : dependencies.create(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.19'),
+    'slf4j-jdk14': dependencies.create(group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.19'),
+    'junit'      : dependencies.create(group: 'junit', name: 'junit', version: '4.12'),
+    'mockito'    : dependencies.create(group: 'org.mockito', name: 'mockito-core', version: '1.10.19'),
+    'groovy-all' : dependencies.create(group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.6')
+]
 
 dependencyUpdates.resolutionStrategy = {
     componentSelection { rules ->
@@ -69,4 +45,8 @@ dependencyUpdates.resolutionStrategy = {
             }
         }
     }
+}
+
+release {
+    failOnSnapshotDependencies = false
 }

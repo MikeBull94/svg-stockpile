@@ -1,5 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
+description = 'Gradle Plugin that interacts with the svg-stockpile API.'
+
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/integTest.gradle"
@@ -7,13 +9,11 @@ apply from: "$rootDir/gradle/findbugs.gradle"
 apply from: "$rootDir/gradle/pmd.gradle"
 apply from: "$rootDir/gradle/publish.gradle"
 
-description = 'Gradle Plugin that interacts with the svg-stockpile API.'
-
 dependencies {
     compile gradleApi()
     compile project(':api')
     integTestCompile gradleTestKit()
-    integTestCompile group: 'org.codehaus.groovy', name: 'groovy-all'
+    integTestCompile deps['groovy-all']
 }
 
 javadoc.options {

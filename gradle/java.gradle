@@ -1,7 +1,3 @@
-/**
- * Provides a Java build environment with common dependencies and Javadoc + sources artifacts when applied to any project.
- */
-
 apply plugin: 'java'
 apply plugin: 'idea'
 
@@ -14,13 +10,17 @@ configurations {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    doclet group: 'com.grahamedgecombe.apiviz', name: 'apiviz'
-    compile group: 'com.google.guava', name: 'guava'
-    compile group: 'org.slf4j', name: 'slf4j-api'
-    compile group: 'org.slf4j', name: 'slf4j-jdk14'
-    testCompile group: 'junit', name: 'junit'
-    testCompile group: 'org.mockito', name: 'mockito-core'
+    doclet deps['apiviz']
+    compile deps['guava']
+    compile deps['slf4j-api']
+    compile deps['slf4j-jdk14']
+    testCompile deps['junit']
+    testCompile deps['mockito']
 }
 
 idea {
@@ -49,7 +49,7 @@ javadoc {
         showAll()
         links 'https://docs.oracle.com/javase/8/docs/api/'
         links 'http://www.slf4j.org/api/'
-        links "https://google.github.io/guava/releases/${versions['com.google.guava:guava']}/api/docs/"
+        links "https://google.github.io/guava/releases/${deps['guava'].version}/api/docs/"
     }
 }
 

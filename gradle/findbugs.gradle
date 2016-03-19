@@ -1,7 +1,3 @@
-/**
- * Applies the FindBugs(tm) Plugin with HTML reporting enabled.
- */
-
 apply plugin: 'findbugs'
 
 tasks.withType(FindBugs) {
