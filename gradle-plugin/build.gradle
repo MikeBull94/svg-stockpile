@@ -13,7 +13,7 @@ dependencies {
     compile gradleApi()
     compile project(':api')
     integTestCompile gradleTestKit()
-    integTestCompile deps['groovy-all']
+    integTestCompile deps.groovy
 }
 
 javadoc.options {

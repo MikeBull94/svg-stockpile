@@ -15,12 +15,11 @@ repositories {
 }
 
 dependencies {
-    doclet deps['apiviz']
-    compile deps['guava']
-    compile deps['slf4j-api']
-    compile deps['slf4j-jdk14']
-    testCompile deps['junit']
-    testCompile deps['mockito']
+    doclet deps.apiviz
+    compile deps.guava
+    compile deps.slf4j
+    testCompile deps.junit
+    testCompile deps.mockito
 }
 
 idea {
@@ -30,7 +29,7 @@ idea {
     }
 }
 
-javadoc {
+tasks.javadoc {
     doFirst {
         sourceSets.main.output.each { dir ->
             dir.mkdirs()
@@ -49,11 +48,11 @@ javadoc {
         showAll()
         links 'https://docs.oracle.com/javase/8/docs/api/'
         links 'http://www.slf4j.org/api/'
-        links "https://google.github.io/guava/releases/${deps['guava'].version}/api/docs/"
+        links "https://google.github.io/guava/releases/$deps.guava.version/api/docs/"
     }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task javadocJar(type: Jar, dependsOn: tasks.javadoc) {
     group = LifecycleBasePlugin.BUILD_GROUP
     description = 'Assembles a jar archive containing the Javadoc API documentation.'
     classifier = 'javadoc'
