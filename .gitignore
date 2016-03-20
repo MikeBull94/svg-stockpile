@@ -10,6 +10,9 @@
 # EditorConfig
 !.editorconfig
 
+# Travis CI
+!.travis.yml
+
 # Gradle
 build/
 
