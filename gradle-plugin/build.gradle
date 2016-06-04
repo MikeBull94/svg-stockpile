@@ -2,12 +2,12 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 description = 'Gradle Plugin that interacts with the svg-stockpile API.'
 
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
-apply from: "$rootDir/gradle/integTest.gradle"
-apply from: "$rootDir/gradle/findbugs.gradle"
-apply from: "$rootDir/gradle/pmd.gradle"
-apply from: "$rootDir/gradle/publish.gradle"
+apply from: "$gradleDir/java.gradle"
+apply from: "$gradleDir/jacoco.gradle"
+apply from: "$gradleDir/integTest.gradle"
+apply from: "$gradleDir/findbugs.gradle"
+apply from: "$gradleDir/pmd.gradle"
+apply from: "$gradleDir/publish.gradle"
 
 dependencies {
     compile gradleApi()

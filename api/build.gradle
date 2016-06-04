@@ -1,10 +1,10 @@
 description = 'API for interacting with svg-stockpile.'
 
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
-apply from: "$rootDir/gradle/findbugs.gradle"
-apply from: "$rootDir/gradle/pmd.gradle"
-apply from: "$rootDir/gradle/publish.gradle"
+apply from: "$gradleDir/java.gradle"
+apply from: "$gradleDir/jacoco.gradle"
+apply from: "$gradleDir/findbugs.gradle"
+apply from: "$gradleDir/pmd.gradle"
+apply from: "$gradleDir/publish.gradle"
 
 sourceSets {
     main {

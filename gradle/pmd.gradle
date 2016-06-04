@@ -6,7 +6,7 @@ pmd {
 
 tasks.withType(Pmd) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    ruleSetFiles = files("$rootDir/gradle/pmd-ruleset.xml")
+    ruleSetFiles = files("$gradleDir/pmd-ruleset.xml")
     ruleSets = [ ]
 
     reports {
