@@ -45,9 +45,9 @@ afterEvaluate {
         url = 'https://michael-bull.com/projects/svg-stockpile'
 
         scm {
-            connection = 'scm:git:https://github.com/MikeBull94/svg-stockpile'
-            developerConnection = 'scm:git:git@github.com:MikeBull94/svg-stockpile.git'
-            url = 'https://github.com/MikeBull94/svg-stockpile'
+            connection = 'scm:git:https://github.com/michaelbull/svg-stockpile'
+            developerConnection = 'scm:git:git@github.com:michaelbull/svg-stockpile.git'
+            url = 'https://github.com/michaelbull/svg-stockpile'
         }
 
         licenses {
