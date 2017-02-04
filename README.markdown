@@ -152,8 +152,8 @@ This project is available under the terms of the ISC license. See the
 [api-resources]: api/src/main/resources
 [unit-tests]: api/src/test/java
 
-[build-status-img]: https://travis-ci.org/MikeBull94/svg-stockpile.svg
-[build-status]: https://travis-ci.org/MikeBull94/svg-stockpile
+[build-status-img]: https://travis-ci.org/michaelbull/svg-stockpile.svg
+[build-status]: https://travis-ci.org/michaelbull/svg-stockpile
 [svg]: https://www.w3.org/Graphics/SVG/
 [java]: https://java.com
 [caniuse-svg]: http://caniuse.com/#feat=svg
